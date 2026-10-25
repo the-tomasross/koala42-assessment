@@ -28,7 +28,7 @@ A server-rendered explorer of Czech business corporations using public RES and A
 - About 58 % of active companies have `KATPO` `000`; size bands only narrow the 42 % reporting a category. Unknown size has its own filter.
 - ČSÚ refreshes RES twice a month; updating requires importing the snapshot and rebuilding the image.
 - ARES can be slow or rate limited; MF blocks above 500 requests per minute. Requests are deduplicated per company, capped at 8 in parallel and failures are remembered for 30 s, but the cache is per instance and in memory and there is no per-client rate limit.
-- First request after idle: about 1 to 2 s, then 0.25 to 0.45 s.
+- First request after idle: about 1 to 2 s, then about 0.3 s. Deep pages of broad lists (page 200 of all companies with unknown size, or of dissolved ones sorted by date) sort in memory and take 1.3 to 1.5 s on Cloud Run.
 - Lists stop at 200 pages (5,000 rows) to bound query time; narrower filters reach the rest. One-letter search terms match whole words only, so `s` finds every `s.r.o.`.
 - NACE labels use the 2008 classification; RES also carries NACE 2025 from 2026, which is unused.
 - Sorting folds diacritics, so Č sorts with C.
