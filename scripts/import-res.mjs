@@ -39,11 +39,13 @@ export function companyAddress(r) {
     [postal, r.OBEC_TEXT].filter(Boolean).join(' ')].filter(Boolean).join(', ');
 }
 
-// Ordering key: names like `"CEDR", spol. s r.o.` or `&rewa s.r.o.` would
-// otherwise sort before every letter. Diacritics are folded so Č sorts with C.
+// Ordering key: leading quotes and symbols are dropped, so `"CEDR", spol. s r.o.`
+// sorts under C. Names starting with a digit go after all letters (prefix 1).
+// Diacritics are folded so Č sorts with C.
 export function sortKey(name) {
-  return name.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase()
+  const folded = name.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase()
     .replace(/^[^\p{L}\p{N}]+/u, '');
+  return (/^\p{L}/u.test(folded) ? '0' : '1') + folded;
 }
 
 export async function importRes(csv, out = 'data/companies.db') {
@@ -56,10 +58,10 @@ export async function importRes(csv, out = 'data/companies.db') {
     db.exec(`PRAGMA journal_mode=OFF; PRAGMA synchronous=OFF;
       CREATE TABLE company(ico TEXT PRIMARY KEY, name TEXT, form TEXT, size TEXT, nace TEXT,
         district TEXT, region TEXT, municipality TEXT, address TEXT, founded TEXT, dissolved TEXT,
-        sort_key TEXT);
+        sort_key TEXT, size_rank INTEGER);
       CREATE TABLE meta(key TEXT PRIMARY KEY, value TEXT);
       BEGIN;`);
-    const insert = db.prepare('INSERT INTO company VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+    const insert = db.prepare('INSERT INTO company VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
     let headers;
     for await (const values of parseCsv(createReadStream(csv, { encoding: 'utf8' }))) {
       if (!headers) {
@@ -77,7 +79,7 @@ export async function importRes(csv, out = 'data/companies.db') {
       if (!['111', '112', '113', '121', '205'].includes(r.FORMA)) continue;
       insert.run(r.ICO, r.FIRMA, r.FORMA, r.KATPO || '000', r.NACE || '', r.OKRESLAU,
         r.OKRESLAU.slice(0, 5), r.OBEC_TEXT || '', companyAddress(r), r.DDATVZN || '', r.DDATZAN || null,
-        sortKey(r.FIRMA));
+        sortKey(r.FIRMA), r.KATPO && r.KATPO !== '000' ? Number(r.KATPO) : -1);
       kept++; if (!r.DDATZAN) active++;
     }
     if (!headers) throw new Error('Empty CSV');
@@ -87,7 +89,9 @@ export async function importRes(csv, out = 'data/companies.db') {
       CREATE INDEX company_region_size ON company(dissolved, region, size);
       CREATE INDEX company_district_size ON company(dissolved, district, size);
       CREATE INDEX company_size ON company(dissolved, size);
-      CREATE INDEX company_sort ON company(sort_key);
+      CREATE INDEX company_sort ON company(sort_key, ico);
+      CREATE INDEX company_default_sort ON company(dissolved, size_rank DESC, sort_key, ico);
+      CREATE INDEX company_founded_sort ON company(dissolved, founded DESC, ico);
       CREATE VIRTUAL TABLE company_fts USING fts5(name, content='company', content_rowid='rowid', tokenize='unicode61 remove_diacritics 2');
       INSERT INTO company_fts(company_fts) VALUES ('rebuild');
       ANALYZE; VACUUM;`);

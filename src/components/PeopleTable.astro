@@ -1,6 +1,7 @@
 ---
 import type { Person } from '../lib/ares';
 import { getCompany } from '../lib/db';
+import { translateRole } from '../lib/roles';
 import { date } from '../lib/format';
 
 interface Props {
@@ -28,8 +29,11 @@ const linkable = (p: Person) => p.kind === 'company' && p.ico && getCompany(p.ic
           <th scope="row">
             {linkable(p) ? <a class="underline" href={`/company/${p.ico}`}>{p.name}</a> : p.name}
           </th>
-          <td>{(owners ? p.share : p.role) || 'Not reported'}</td>
-          <td>{date(p.since)}</td>
+          <td>{owners ? p.share || 'Not reported' : <>
+            {translateRole(p.role || '').label || 'Not reported'}
+            {translateRole(p.role || '').original && <small class="role-original">{translateRole(p.role || '').original}</small>}
+          </>}</td>
+          <td class="numeric">{date(p.since)}</td>
         </tr>
       ))}
     </tbody>

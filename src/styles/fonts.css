@@ -1,22 +1,32 @@
-/* GENEROVANÝ SOUBOR, needituj ho ručně.
-   Vzniká z public/fonts/ příkazem `npm run fonts` (scripts/generate-fonts.mjs).
-   Role písem se nastavují v ROLE v tom skriptu, ne tady.
+/* Self-hosted IBM Plex: Latin and Latin Extended subsets for English and Czech.
+   Variable Sans is limited to weights 400 to 600; Mono uses 400 and 500. */
+@import "@fontsource/ibm-plex-mono/latin-400.css";
+@import "@fontsource/ibm-plex-mono/latin-ext-400.css";
+@import "@fontsource/ibm-plex-mono/latin-500.css";
+@import "@fontsource/ibm-plex-mono/latin-ext-500.css";
 
-   PODSADA MUSÍ MÍT PŘI ZMĚNĚ NOVÝ NÁZEV SOUBORU. /fonts/* jede s immutable
-   na rok, takže pod stejným názvem by vracejícímu se návštěvníkovi jela stará
-   podsada a chybějící znaky by mu vysázelo náhradní písmo.
+/* ibm-plex-sans-latin-ext-wght-normal */
+@font-face {
+  font-family: 'IBM Plex Sans Variable';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400 600;
+  src: url(@fontsource-variable/ibm-plex-sans/files/ibm-plex-sans-latin-ext-wght-normal.woff2) format('woff2-variations');
+  unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
+}
 
-   LICENCE: soubor s licencí patří vedle písma do public/fonts/. U OFL je to
-   podmínka licence, ne zvyk. Písmo z Fontshare se klientovi předávat nesmí,
-   viz standards/web/PLAYBOOK.md, sekce 4. */
 
-/* V public/fonts/ zatím žádné .woff2 není, takže web jede na systémovém
-   zásobníku. To je platný výchozí stav kostry, NE hotový web: písmo je
-   nejrychlejší cesta k vlastnímu vzhledu. Polož woff2 do public/fonts/,
-   nastav ROLE v scripts/generate-fonts.mjs a pusť `npm run fonts` znovu. */
-
+/* ibm-plex-sans-latin-wght-normal */
+@font-face {
+  font-family: 'IBM Plex Sans Variable';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400 600;
+  src: url(@fontsource-variable/ibm-plex-sans/files/ibm-plex-sans-latin-wght-normal.woff2) format('woff2-variations');
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
 :root {
-  --font-family-display: ui-serif, Georgia, "Times New Roman", serif;
-  --font-family-body: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --font-family-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --font-family-display: "IBM Plex Sans Variable", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-family-body: "IBM Plex Sans Variable", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-family-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 }

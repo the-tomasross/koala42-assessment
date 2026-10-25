@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { execFileSync } from 'node:child_process';
 import Database from 'better-sqlite3';
-import { parseCsv, companyAddress } from '../scripts/import-res.mjs';
+import { parseCsv, companyAddress, sortKey } from '../scripts/import-res.mjs';
 
 test('sample import has complete coverage, dates, metadata and accent insensitive FTS', async () => {
   const dir = await mkdtemp(join(tmpdir(), 'res-test-'));
@@ -39,4 +39,14 @@ test('CSV handles chunk boundaries, escaped quotes, embedded newlines and CRLF',
 test('fallback addresses preserve street, house type, district and postal formatting', () => {
   assert.equal(companyAddress({ ULICE_TEXT: 'Masarykovo náměstí', CDOM: '1484', COBCE_TEXT: 'Zelené Předměstí (Pardubice I)', OBEC_TEXT: 'Pardubice', PSC: '53002' }), 'Masarykovo náměstí 1484, Zelené Předměstí (Pardubice I), 530 02 Pardubice');
   assert.equal(companyAddress({ TYPCDOM: '2', CDOM: '5', COR: '7', OBEC_TEXT: 'Test', COBCE_TEXT: 'Test', PSC: '12345' }), 'č. ev. 5/7, 123 45 Test');
+});
+
+test('name sort ignores leading symbols and puts digit-led names after letters', () => {
+  assert.equal(sortKey('Čáp s.r.o.'), '0cap s.r.o.');
+  assert.equal(sortKey('  Žito'), '0zito');
+  assert.equal(sortKey('123 Test'), '1123 test');
+  assert.equal(sortKey('"CEDR"'), '0cedr"');
+  assert.equal(sortKey('&rewa'), '0rewa');
+  assert.equal(sortKey('!!!'), '1');
+  assert.deepEqual(['123 Test', '&rewa', 'Čáp', 'Adam'].sort((a, b) => sortKey(a).localeCompare(sortKey(b))), ['Adam', 'Čáp', '&rewa', '123 Test']);
 });

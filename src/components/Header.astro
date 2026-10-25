@@ -2,13 +2,13 @@
 import { site } from '../data/site';
 ---
 
-<header class="border-b border-line py-4">
+<header class="site-header">
   <div class="container-page flex flex-wrap items-center justify-between gap-4">
-    <a href="/" class="font-display text-h4">{site.name}</a>
+    <a href="/" class="product-name">{site.name}</a>
     <nav aria-label="Main navigation">
       <ul class="flex items-center gap-6 text-caption">
-        <li><a class="underline-offset-4 hover:underline" href="/">Companies</a></li>
-        <li><a class="underline-offset-4 hover:underline" href="/about">About the data</a></li>
+        <li><a class="underline-offset-4 hover:underline" href="/" aria-current={Astro.url.pathname === '/' || Astro.url.pathname.startsWith('/company/') ? 'page' : undefined}>Companies</a></li>
+        <li><a class="underline-offset-4 hover:underline" href="/about" aria-current={Astro.url.pathname === '/about' ? 'page' : undefined}>About the data</a></li>
       </ul>
     </nav>
   </div>

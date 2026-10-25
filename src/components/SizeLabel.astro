@@ -1,0 +1,9 @@
+---
+import { sizes, sizeBands } from '../lib/codelists';
+interface Props { code: string }
+const { code } = Astro.props;
+const band = Object.entries(sizeBands).find(([, band]) => band.codes.includes(code))?.[0];
+const level = ['micro', 'small', 'medium', 'large'].indexOf(band || '') + 1;
+const label = (sizes[code] || 'Not reported').replace(' employees', '');
+---
+<span class="size-label"><span>{label}</span>{level > 0 && <span class="size-meter" aria-hidden="true">{[1, 2, 3, 4].map(step => <i class:list={{ filled: step <= level }} />)}</span>}</span>

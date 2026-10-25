@@ -1,8 +1,10 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import { searchCompanies, getMeta } from '../lib/db';
-import { regions, districts, districtsByRegion, sizeBands, sizes, forms } from '../lib/codelists';
-import { date } from '../lib/format';
+import StatusBadge from '../components/StatusBadge.astro';
+import SizeLabel from '../components/SizeLabel.astro';
+import { searchCompanies, getMeta, countActiveCompanies, normalizeSort, sorts } from '../lib/db';
+import { regions, districts, districtsByRegion, sizeBands, forms } from '../lib/codelists';
+import { date, companyCount } from '../lib/format';
 
 const params = Astro.url.searchParams;
 const q = (params.get('q') || '').trim().slice(0, 500);
@@ -12,146 +14,199 @@ let size = params.get('size') || '';
 if (!Object.hasOwn(regions, region)) region = '';
 if (!Object.hasOwn(districts, district)) district = '';
 if (!Object.hasOwn(sizeBands, size)) size = '';
-// A district outside the chosen region wins: it is the more specific choice.
-if (district && region && !district.startsWith(region)) region = '';
+if (region && district && !district.startsWith(region)) district = '';
 const includeDissolved = params.get('includeDissolved') === '1';
-
-const result = searchCompanies({
-  q,
-  region,
-  district,
-  size,
-  includeDissolved,
-  page: Number(params.get('page') || 1),
-});
+const sort = normalizeSort(params.get('sort') || '');
+const result = searchCompanies({ q, region, district, size, includeDissolved, sort, page: Number(params.get('page') || 1) });
 const meta = getMeta();
-
-function pageLink(page: number) {
-  const next = new URLSearchParams(params);
-  next.set('page', String(page));
-  return '/?' + next;
+const state = new URLSearchParams();
+for (const [key, value] of Object.entries({ q, region, district, size, includeDissolved: includeDissolved ? '1' : '', sort: sort === 'size' ? '' : sort })) {
+  if (value) state.set(key, value);
 }
-
-// The column header already says "Employees".
-const sizeShort = (code: string) => (sizes[code] || 'Not reported').replace(' employees', '');
+function listLink(key: string, value?: string) {
+  const next = new URLSearchParams(state);
+  if (value) next.set(key, value); else next.delete(key);
+  return next.size ? '/?' + next : '/';
+}
+const chips = [
+  ['q', q && `Search: ${q}`], ['region', regions[region]], ['district', districts[district]],
+  ['size', sizeBands[size]?.label], ['includeDissolved', includeDissolved ? 'Include dissolved' : ''],
+].filter((entry): entry is [string, string] => Boolean(entry[1]));
+const filterCount = [region, district, size, includeDissolved].filter(Boolean).length;
+const visibleDistricts = region ? { [region]: districtsByRegion[region] } : districtsByRegion;
 ---
 
-<Layout title="Companies | CZ Company Explorer">
-  <h1 class="font-display text-h3 font-semibold">Companies</h1>
+<Layout title="Czech companies | CZ Company Explorer">
+  <header class="page-intro">
+    <h1>Czech companies</h1>
+    <p class="text-muted"><span class="numeric">{countActiveCompanies().toLocaleString('en-US')}</span> active business corporations from the ČSÚ register, snapshot <span class="numeric">{date(meta.source_date)}</span>.</p>
+  </header>
 
-  <form method="get" action="/" class="mt-6 grid gap-4 border-y border-line py-5 sm:grid-cols-2 lg:grid-cols-4">
-    <div>
-      <label for="q" class="mb-1 block text-caption font-semibold">Company name or IČO</label>
-      <input class="field" id="q" name="q" value={q} maxlength="500" placeholder="Search companies" />
+  <form id="company-filters" method="get" action="/" class="filter-form">
+    <div class="search-field">
+      <label for="q">Company name or IČO</label>
+      <input class="field" id="q" name="q" value={q} maxlength="500" placeholder="Search companies" type="search" />
     </div>
-
-    <div>
-      <label for="region" class="mb-1 block text-caption font-semibold">Region</label>
-      <select class="field" id="region" name="region">
-        <option value="">All regions</option>
-        {Object.entries(regions).map(([code, label]) => (
-          <option value={code} selected={region === code}>{label}</option>
-        ))}
-      </select>
-    </div>
-
-    <div>
-      <label for="district" class="mb-1 block text-caption font-semibold">District</label>
-      <select class="field" id="district" name="district">
-        <option value="">All districts</option>
-        {Object.entries(districtsByRegion).map(([code, entries]) => (
-          <optgroup label={regions[code]}>
-            {entries.map(([value, label]) => (
-              <option value={value} selected={district === value}>{label}</option>
+    <details class="filter-disclosure">
+      <summary id="filter-summary">Filters{filterCount ? ` (${filterCount})` : ''}</summary>
+      <div class="filter-fields">
+        <div>
+          <label for="region">Region</label>
+          <select class="field" id="region" name="region">
+            <option value="">All regions</option>
+            {Object.entries(regions).map(([code, label]) => <option value={code} selected={region === code}>{label}</option>)}
+          </select>
+        </div>
+        <div>
+          <label for="district">District</label>
+          <select class="field" id="district" name="district">
+            <option value="">All districts</option>
+            {Object.entries(visibleDistricts).map(([code, entries]) => (
+              <optgroup label={regions[code]}>{entries.map(([value, label]) => <option value={value} selected={district === value}>{label}</option>)}</optgroup>
             ))}
-          </optgroup>
-        ))}
+          </select>
+          <template id="all-districts">
+            {Object.entries(districtsByRegion).map(([code, entries]) => (
+              <optgroup label={regions[code]} data-region={code}>{entries.map(([value, label]) => <option value={value}>{label}</option>)}</optgroup>
+            ))}
+          </template>
+        </div>
+        <div>
+          <label for="size">Company size (employees)</label>
+          <select class="field" id="size" name="size" aria-describedby="size-hint">
+            <option value="">All sizes</option>
+            {Object.entries(sizeBands).map(([code, band]) => <option value={code} selected={size === code}>{band.label}</option>)}
+          </select>
+        </div>
+        <label class="checkbox-label"><input type="checkbox" name="includeDissolved" value="1" checked={includeDissolved} /> Include dissolved</label>
+      </div>
+    </details>
+    <div class="sort-field">
+      <label for="sort">Sort by</label>
+      <select class="field" id="sort" name="sort">
+        {Object.entries(sorts).map(([code, label]) => <option value={code} selected={sort === code}>{label}</option>)}
       </select>
     </div>
-
-    <div>
-      <label for="size" class="mb-1 block text-caption font-semibold">Company size (employees)</label>
-      <select class="field" id="size" name="size" aria-describedby="size-hint">
-        <option value="">All sizes</option>
-        {Object.entries(sizeBands).map(([code, band]) => (
-          <option value={code} selected={size === code}>{band.label}</option>
-        ))}
-      </select>
-    </div>
-
-    <p id="size-hint" class="text-caption text-muted sm:col-span-2 lg:col-span-4">
-      Turnover is not published as open data. Size is a proxy, see{' '}
-      <a class="underline" href="/about">About the data</a>.
-    </p>
-
-    <div class="flex flex-wrap items-center gap-4 sm:col-span-2 lg:col-span-4">
-      <label class="flex items-center gap-2">
-        <input type="checkbox" name="includeDissolved" value="1" checked={includeDissolved} />
-        Include dissolved
-      </label>
-      <button class="btn" type="submit">Filter</button>
-      <a class="underline" href="/">Reset</a>
-    </div>
+    <button class="btn filter-submit" type="submit">Filter</button>
+    <p id="size-hint" class="filter-hint text-caption text-muted">Turnover is not published as open data. Size is a proxy, see <a class="underline" href="/about">About the data</a>.</p>
   </form>
 
-  <p class="my-5 text-caption">
-    <strong>{result.total.toLocaleString('en-US')} companies</strong>
-    <span class="text-muted"> · Data snapshot {date(meta.source_date)}</span>
-  </p>
+  <p id="results-status" class="sr-only" role="status" aria-live="polite"></p>
+  <div id="results">
+  {chips.length > 0 && <nav class="filter-chips" aria-label="Active filters">
+    {chips.map(([key, label]) => <a class="filter-chip" href={listLink(key)} aria-label={`Remove filter: ${label}`}><span>{label}</span><span aria-hidden="true">×</span></a>)}
+    {chips.length >= 2 && <a class="clear-filters" href="/">Clear all</a>}
+  </nav>}
+  <p class="results-count"><strong class="numeric">{companyCount(result.total)}</strong></p>
 
-  {result.rows.length ? (
-    <>
-      <table class="data-table company-table">
-        <caption class="sr-only">Companies matching the selected filters</caption>
-        <thead>
-          <tr>
-            <th scope="col" class="w-[37%]">Name</th>
-            <th scope="col">IČO</th>
-            <th scope="col" class="hidden md:table-cell">Legal form</th>
-            <th scope="col">Employees</th>
-            <th scope="col">Town</th>
-            <th scope="col" class="hidden md:table-cell">District</th>
-          </tr>
-        </thead>
-        <tbody>
-          {result.rows.map((c) => (
-            <tr>
-              <th scope="row">
-                <a class="underline underline-offset-4" href={`/company/${c.ico}`}>{c.name}</a>
-                {c.dissolved && <span class="block text-caption text-muted">Dissolved</span>}
-              </th>
-              <td class="tabular-nums">{c.ico}</td>
-              <td class="hidden md:table-cell">{forms[c.form]?.short || c.form}</td>
-              <td>{sizeShort(c.size)}</td>
-              <td>{c.municipality || 'Not reported'}</td>
-              <td class="hidden md:table-cell">{districts[c.district] || c.district}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
-      <nav aria-label="Pagination" class="mt-6 flex items-center justify-between gap-3 text-caption">
-        {result.page > 1 ? (
-          <a class="btn btn-secondary" rel="prev" href={pageLink(result.page - 1)}>Previous</a>
-        ) : (
-          <span class="text-muted">Previous</span>
-        )}
-        <span>Page {result.page} of {result.pages.toLocaleString('en-US')}</span>
-        {result.page < result.pages ? (
-          <a class="btn btn-secondary" rel="next" href={pageLink(result.page + 1)}>Next</a>
-        ) : (
-          <span class="text-muted">Next</span>
-        )}
-      </nav>
-      {result.capped && (
-        <p class="mt-3 text-caption text-muted">
-          Only the first {result.pages} pages are listed. Narrow the filters or search to see the rest.
-        </p>
-      )}
-    </>
-  ) : (
-    <p class="py-10">
-      No companies match these filters. <a class="underline" href="/">Reset</a>
-    </p>
-  )}
+  {result.rows.length ? <>
+    <table class="data-table company-table">
+      <caption class="sr-only">Companies matching the selected filters</caption>
+      <thead><tr>
+        <th scope="col" class="company-name-column" aria-sort={sort === 'name' ? 'ascending' : undefined}><a href={listLink('sort', 'name')}>Name{sort === 'name' && <span aria-hidden="true"> ↑</span>}</a></th>
+        <th scope="col" class="ico-column">IČO</th>
+        <th scope="col" class="hidden md:table-cell">Legal form</th>
+        <th scope="col" class="employees-column" aria-sort={sort === 'size' ? 'descending' : undefined}><a href={listLink('sort', 'size')}>Employees{sort === 'size' && <span aria-hidden="true"> ↓</span>}</a></th>
+        <th scope="col">Town</th>
+        <th scope="col" class="hidden lg:table-cell">District</th>
+      </tr></thead>
+      <tbody>{result.rows.map(c => <tr>
+        <th scope="row" class="company-name"><a href={`/company/${c.ico}`}>{c.name}</a> <StatusBadge status={c.status} /></th>
+        <td class="ico" data-label="IČO">{c.ico}</td>
+        <td class="hidden md:table-cell">{forms[c.form]?.short || c.form}</td>
+        <td data-label="Employees"><SizeLabel code={c.size} /></td>
+        <td data-label="Town">{c.municipality || 'Not reported'}</td>
+        <td class="hidden lg:table-cell">{districts[c.district] || c.district}</td>
+      </tr>)}</tbody>
+    </table>
+    <nav aria-label="Pagination" class="pagination">
+      {result.page > 1 ? <a class="btn btn-secondary" rel="prev" href={listLink('page', String(result.page - 1))}>Previous</a> : <span class="text-muted">Previous</span>}
+      <span>Page <span class="numeric">{result.page} of {result.pages.toLocaleString('en-US')}</span></span>
+      {result.page < result.pages ? <a class="btn btn-secondary" rel="next" href={listLink('page', String(result.page + 1))}>Next</a> : <span class="text-muted">Next</span>}
+    </nav>
+    {result.capped && <p class="mt-3 text-caption text-muted">Only the first {result.pages} pages are listed. Narrow the filters or search to see the rest.</p>}
+  </> : <p class="py-10">No companies match these filters. <a class="underline" href="/">Reset</a></p>}
+  </div>
 </Layout>
+
+<script>
+  const form = document.querySelector<HTMLFormElement>('#company-filters');
+  const search = document.querySelector<HTMLInputElement>('#q');
+  const region = document.querySelector<HTMLSelectElement>('#region');
+  const district = document.querySelector<HTMLSelectElement>('#district');
+  const template = document.querySelector<HTMLTemplateElement>('#all-districts');
+  const disclosure = document.querySelector<HTMLDetailsElement>('.filter-disclosure');
+  let results = document.querySelector<HTMLElement>('#results');
+  const status = document.querySelector<HTMLElement>('#results-status');
+  if (form && search && region && district && template && disclosure && results && status) {
+    // CSS exposes desktop details before this script runs, avoiding a load flash.
+    const wide = window.matchMedia('(min-width: 640px)');
+    const syncDisclosure = () => { disclosure.open = wide.matches; };
+    syncDisclosure();
+    wide.addEventListener('change', syncDisclosure);
+
+    // Same URL the GET form would produce, without empty fields and the default sort.
+    const listUrl = () => {
+      const params = new URLSearchParams();
+      for (const [key, value] of new FormData(form)) {
+        if (typeof value === 'string' && value.trim() && !(key === 'sort' && value === 'size')) params.set(key, value.trim());
+      }
+      return params.size ? '/?' + params : '/';
+    };
+
+    // Swap only the results so typing is never interrupted by a page load.
+    let controller: AbortController | undefined;
+    // Typing replaces the history entry, a changed filter adds one.
+    const refresh = async (push = false) => {
+      controller?.abort();
+      controller = new AbortController();
+      const url = listUrl();
+      try {
+        const response = await fetch(url, { signal: controller.signal, headers: { Accept: 'text/html' } });
+        if (!response.ok) throw new Error(String(response.status));
+        const page = new DOMParser().parseFromString(await response.text(), 'text/html');
+        const next = page.querySelector('#results');
+        if (!next) throw new Error('No results in response');
+        results!.replaceWith(next);
+        results = next as HTMLElement;
+        const summary = page.querySelector('#filter-summary');
+        const current = document.querySelector('#filter-summary');
+        if (summary && current) current.textContent = summary.textContent;
+        if (url !== location.pathname + location.search) history[push ? 'pushState' : 'replaceState'](null, '', url);
+        status.textContent = next.querySelector('.results-count')?.textContent?.trim() || '';
+      } catch (error) {
+        if ((error as Error).name !== 'AbortError') location.assign(url);
+      }
+    };
+    // Back and forward restore the form state from the URL.
+    window.addEventListener('popstate', () => location.reload());
+
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const scheduleSearch = () => {
+      clearTimeout(timer);
+      const value = search.value.trim();
+      if (!value || value.length >= 2) timer = setTimeout(() => refresh(), 400);
+    };
+    search.addEventListener('input', event => { if (!(event as InputEvent).isComposing) scheduleSearch(); });
+    search.addEventListener('compositionstart', () => clearTimeout(timer));
+    search.addEventListener('compositionend', scheduleSearch);
+    form.addEventListener('change', event => {
+      const target = event.target;
+      if (!(target instanceof HTMLSelectElement || target instanceof HTMLInputElement && target.type === 'checkbox')) return;
+      clearTimeout(timer);
+      if (target === region) {
+        const previous = district.value;
+        const groups = Array.from(template.content.querySelectorAll('optgroup')).filter(group => !region.value || group.dataset.region === region.value);
+        district.replaceChildren(new Option('All districts', ''), ...groups.map(group => group.cloneNode(true)));
+        district.value = !region.value || previous.startsWith(region.value) ? previous : '';
+      }
+      refresh(true);
+    });
+    // Enter or the Filter button: a clean URL instead of empty parameters.
+    form.addEventListener('submit', event => {
+      event.preventDefault();
+      clearTimeout(timer);
+      refresh(true);
+    });
+  }
+</script>

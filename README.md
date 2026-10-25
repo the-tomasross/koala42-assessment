@@ -9,7 +9,7 @@ A server-rendered explorer of Czech business corporations using public RES and A
 | Story | Status | How |
 |---|---|---|
 | List all Czech companies | Done within scope | Bulk RES import of s.r.o., a.s., v.o.s., k.s. and cooperatives, with search and pagination. Other entity types are excluded; dissolved companies are optional. |
-| Filter by turnover and location | Partly | Region and district filters work; labelled employee size replaces unavailable turnover. |
+| Filter by turnover and location | Partly | Region and district filters work; labelled employee size replaces unavailable turnover, and the list sorts largest first by default. |
 | Show details, owners, management and their contacts | Partly; contacts: Not done, on purpose | Company facts plus current owners and management from ARES. Personal phone numbers and emails are omitted. |
 
 ## Approach and trade-offs

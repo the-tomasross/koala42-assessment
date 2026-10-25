@@ -1,0 +1,6 @@
+---
+import type { CompanyStatus } from '../lib/status';
+interface Props { status: CompanyStatus }
+const { status } = Astro.props;
+---
+{status !== 'active' && <span class="status-badge">{status === 'dissolved' ? 'Dissolved' : 'In liquidation'}</span>}
