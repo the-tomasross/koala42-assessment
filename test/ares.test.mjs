@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { getPeople, parsePeople } from '../src/lib/ares.ts';
+import { formatShare, getPeople, parsePeople } from '../src/lib/ares.ts';
 const fixture = JSON.parse(await readFile(new URL('./fixtures/ares-vr-06841945.json', import.meta.url), 'utf8'));
 test('ARES exposes only current people and explicitly allowed fields', async () => {
   const result = await getPeople('06841945', async (url, options) => {
@@ -47,5 +47,15 @@ test('primary record, corporate owners and deleted groups are handled', () => {
     akcionari: [{ clenoveOrganu: [{ pravnickaOsoba: { obchodniJmeno: 'Example Ltd', ico: '12345678' }, podil: [{ velikostPodilu: { typObnos: 'TEXT', hodnota: '1/2' } }] }] }],
   }] });
   assert.equal(result.management.length, 0);
-  assert.equal(result.owners[0].kind, 'company'); assert.equal(result.owners[0].share, '1/2');
+  assert.equal(result.owners[0].kind, 'company'); assert.equal(result.owners[0].share, '50 %');
+});
+test('shares in every format ARES uses read as percentages', () => {
+  const cases = [
+    ['PROCENTA', '50', '50 %'], ['PROCENTA', '100;00', '100 %'], ['PROCENTA', '33;33', '33.33 %'],
+    ['ZLOMEK', '1000000000;1000000000', '100 %'], ['ZLOMEK', '1;3', '33.33 %'],
+    ['TEXT', '970252392/1000000000', '97.03 %'], ['TEXT', '1/2', '50 %'], ['TEXT', '25 %', '25 %'],
+    ['ZLOMEK', '1;1000000', '< 0.01 %'], ['ZLOMEK', '1;0', '1/0'], ['TEXT', 'see the founding deed', 'see the founding deed'],
+    ['KORUNY', '200000;50', '200000.50'],
+  ];
+  for (const [type, value, expected] of cases) assert.equal(formatShare(type, value), expected, `${type} ${value}`);
 });

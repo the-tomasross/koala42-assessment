@@ -42,6 +42,17 @@ test('roles translate every supported term and preserve the Czech original', () 
   for (const [original, label] of cases) {
     assert.deepEqual(translateRole(`  ${original.toLocaleUpperCase('cs')}  `), { label, original: original.toLocaleUpperCase('cs') });
   }
+  const variants = [
+    ['Prokura', 'Authorised signatory (prokura)'],
+    ['Předseda rady jednatelů', 'Chair of the board of managing directors'],
+    ['předseda družstva', 'Chair of the cooperative'],
+    ['předsedkyně představenstva', 'Chair of the board'],
+    ['Členka dozorčí rady', 'Supervisory board member'],
+    ['jednatelka', 'Managing director'],
+    ['Společník:', 'Partner'],
+  ];
+  for (const [original, label] of variants) assert.equal(translateRole(original).label, label, original);
+  assert.equal(translateRole('Společník:').original, 'Společník');
   assert.deepEqual(translateRole(' neznámá funkce '), { label: 'neznámá funkce' });
   assert.deepEqual(translateRole('constructor'), { label: 'constructor' });
 });

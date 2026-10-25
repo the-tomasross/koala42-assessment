@@ -21,11 +21,26 @@ const roles: Record<string, string> = {
   'člen kontrolní komise': 'Audit committee member',
   'předseda správní rady': 'Chair of the administrative board',
   'člen správní rady': 'Administrative board member',
+  'prokura': 'Authorised signatory (prokura)',
+  'předseda rady jednatelů': 'Chair of the board of managing directors',
+  'člen rady jednatelů': 'Member of the board of managing directors',
+  'předseda družstva': 'Chair of the cooperative',
+  'místopředseda družstva': 'Vice-chair of the cooperative',
+  'výkonný ředitel': 'Executive director',
+  'pověřený zmocněnec společníka': "Partner's authorised representative",
+};
+
+// The register uses the feminine form for women ("předsedkyně představenstva").
+const feminine: Record<string, string> = {
+  'předsedkyně': 'předseda', 'místopředsedkyně': 'místopředseda', 'členka': 'člen',
+  'jednatelka': 'jednatel', 'likvidátorka': 'likvidátor', 'prokuristka': 'prokurista',
+  'ředitelka': 'ředitel', 'společnice': 'společník', 'komplementářka': 'komplementář',
+  'komanditistka': 'komanditista',
 };
 
 export function translateRole(role: string): { label: string; original?: string } {
-  const original = role.trim();
-  const key = original.toLocaleLowerCase('cs');
+  const original = role.trim().replace(/\s+/g, ' ').replace(/[\s:.,;]+$/, '');
+  const key = original.toLocaleLowerCase('cs').replace(/\p{L}+/gu, (w) => Object.hasOwn(feminine, w) ? feminine[w] : w);
   const label = Object.hasOwn(roles, key) ? roles[key] : undefined;
   return label ? { label, original } : { label: original };
 }

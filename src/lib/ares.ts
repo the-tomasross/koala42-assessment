@@ -29,8 +29,18 @@ function person(entry: Obj, group: Obj, owner?: Obj): Person | null {
   if (result.kind === 'company' && /^\d{8}$/.test(str(legal.ico))) result.ico = str(legal.ico);
   const share = list((owner || entry).podil).find(current);
   const amount = obj(share?.velikostPodilu);
-  if (current(amount) && str(amount.hodnota)) result.share = str(amount.hodnota) + (amount.typObnos === 'PROCENTA' ? ' %' : '');
+  if (current(amount) && str(amount.hodnota)) result.share = formatShare(str(amount.typObnos), str(amount.hodnota));
   return result;
+}
+const percent = (n: number) => (n > 0 && n < 0.01 ? '< 0.01' : n.toLocaleString('en-GB', { maximumFractionDigits: 2 })) + ' %';
+// ARES writes the decimal comma as ";" ("100;00") and a fraction as "1;2" (ZLOMEK) or "1/2" (TEXT).
+export function formatShare(type: string, value: string): string {
+  const text = value.trim();
+  const fraction = (type === 'ZLOMEK' ? /^(\d+)\s*[;/]\s*(\d+)$/ : /^(\d+)\s*\/\s*(\d+)$/).exec(text);
+  if (fraction && Number(fraction[2]) > 0) return percent((Number(fraction[1]) / Number(fraction[2])) * 100);
+  const number = /^(\d+)(?:[;,.](\d+))?\s*%?$/.exec(text);
+  if (number && (type === 'PROCENTA' || text.endsWith('%'))) return percent(Number(`${number[1]}.${number[2] ?? 0}`));
+  return text.replace(/(\d);(\d)/g, type === 'ZLOMEK' ? '$1/$2' : '$1.$2');
 }
 export function parsePeople(input: unknown): People {
   const records = list(obj(input).zaznamy);
