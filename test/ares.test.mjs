@@ -16,23 +16,30 @@ test('ARES exposes only current people and explicitly allowed fields', async () 
   for (const forbidden of ['datumNarozeni', 'adresa', 'bydliste', '1980-01-01', 'Smyšlená', '11000']) assert.ok(!serialized.includes(forbidden));
   for (const person of [...result.management, ...result.owners]) assert.ok(Object.keys(person).every(k => ['name', 'kind', 'role', 'since', 'ico', 'share'].includes(k)));
 });
-test('errors are returned and retried, while production cache keeps successful and missing records', async () => {
+test('errors are cached briefly, successes and missing records for longer', async () => {
   const original = globalThis.fetch; let calls = 0;
   try {
     globalThis.fetch = async () => { calls++; throw new Error('offline'); };
     assert.equal((await getPeople('99999999')).status, 'error');
     assert.equal((await getPeople('99999999')).status, 'error');
-    assert.equal(calls, 2);
+    assert.equal(calls, 1, 'an outage is not retried on every page view');
     globalThis.fetch = async () => { calls++; return new Response(JSON.stringify(fixture)); };
-    const result = await getPeople('99999999');
+    const result = await getPeople('77777777');
     result.management.length = 0;
-    assert.equal((await getPeople('99999999')).management.length, 2);
-    assert.equal(calls, 3);
+    assert.equal((await getPeople('77777777')).management.length, 2, 'callers get copies, not the cached object');
+    assert.equal(calls, 2);
     globalThis.fetch = async () => { calls++; return new Response('', { status: 404 }); };
     assert.equal((await getPeople('88888888')).status, 'not_found');
     assert.equal((await getPeople('88888888')).status, 'not_found');
-    assert.equal(calls, 4);
+    assert.equal(calls, 3);
   } finally { globalThis.fetch = original; }
+});
+test('concurrent requests for one company share a single upstream call', async () => {
+  let calls = 0;
+  const slow = async () => { calls++; await new Promise(r => setTimeout(r, 20)); return new Response(JSON.stringify(fixture)); };
+  const results = await Promise.all(Array.from({ length: 5 }, () => getPeople('66666666', slow)));
+  assert.equal(calls, 1);
+  assert.ok(results.every(r => r.status === 'ok' && r.management.length === 2));
 });
 test('primary record, corporate owners and deleted groups are handled', () => {
   const result = parsePeople({ zaznamy: [{}, { primarniZaznam: true,

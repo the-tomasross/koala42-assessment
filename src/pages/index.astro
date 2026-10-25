@@ -143,6 +143,11 @@ const sizeShort = (code: string) => (sizes[code] || 'Not reported').replace(' em
           <span class="text-muted">Next</span>
         )}
       </nav>
+      {result.capped && (
+        <p class="mt-3 text-caption text-muted">
+          Only the first {result.pages} pages are listed. Narrow the filters or search to see the rest.
+        </p>
+      )}
     </>
   ) : (
     <p class="py-10">

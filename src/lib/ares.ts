@@ -48,22 +48,42 @@ export function parsePeople(input: unknown): People {
   }
   return { status: 'ok', management, owners };
 }
+// Protects ARES from us: one request per company at a time, a cap on parallel
+// upstream calls, and a short memory of failures so an outage is not retried
+// on every page view. MF blocks clients above 500 requests per minute.
+const OK_TTL = 3_600_000;
+const ERROR_TTL = 30_000;
+const MAX_INFLIGHT = 8;
 const cache = new Map<string, { expires: number; result: People; fetcher: typeof fetch }>();
-export async function getPeople(ico: string, fetcher: typeof fetch = fetch): Promise<People> {
-  const empty = (status: People['status']): People => ({ status, management: [], owners: [] });
-  if (!/^\d{8}$/.test(ico)) return empty('not_found');
-  const cached = cache.get(ico);
-  if (cached && cached.fetcher === fetcher && cached.expires > Date.now()) return structuredClone(cached.result);
+const inflight = new Map<string, Promise<People>>();
+const empty = (status: People['status']): People => ({ status, management: [], owners: [] });
+
+function remember(ico: string, result: People, fetcher: typeof fetch) {
+  cache.delete(ico);
+  if (cache.size >= 500) cache.delete(cache.keys().next().value!);
+  const ttl = result.status === 'error' ? ERROR_TTL : OK_TTL;
+  cache.set(ico, { expires: Date.now() + ttl, result: structuredClone(result), fetcher });
+}
+
+async function fetchPeople(ico: string, fetcher: typeof fetch): Promise<People> {
   try {
     const response = await fetcher(`https://ares.gov.cz/ekonomicke-subjekty-v-be/rest/ekonomicke-subjekty-vr/${ico}`, {
       signal: AbortSignal.timeout(5000), headers: { Accept: 'application/json' },
     });
-    const result = response.status === 404 ? empty('not_found') : response.ok ? parsePeople(await response.json()) : empty('error');
-    if (result.status !== 'error') {
-      cache.delete(ico);
-      if (cache.size >= 500) cache.delete(cache.keys().next().value!);
-      cache.set(ico, { expires: Date.now() + 3600000, result: structuredClone(result), fetcher });
-    }
-    return result;
+    return response.status === 404 ? empty('not_found') : response.ok ? parsePeople(await response.json()) : empty('error');
   } catch { return empty('error'); }
+}
+
+export async function getPeople(ico: string, fetcher: typeof fetch = fetch): Promise<People> {
+  if (!/^\d{8}$/.test(ico)) return empty('not_found');
+  const cached = cache.get(ico);
+  if (cached && cached.fetcher === fetcher && cached.expires > Date.now()) return structuredClone(cached.result);
+  const pending = inflight.get(ico);
+  if (pending) return structuredClone(await pending);
+  // Over the cap the page says ARES did not respond; better than queueing behind it.
+  if (inflight.size >= MAX_INFLIGHT) return empty('error');
+  const request = fetchPeople(ico, fetcher).then((result) => { remember(ico, result, fetcher); return result; })
+    .finally(() => inflight.delete(ico));
+  inflight.set(ico, request);
+  return structuredClone(await request);
 }

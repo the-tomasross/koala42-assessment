@@ -8,6 +8,7 @@ export interface Company {
 const db = new Database(process.env.DB_PATH ?? 'data/companies.db', { readonly: true, fileMustExist: true });
 interface Search { q?: string; region?: string; district?: string; size?: string; includeDissolved?: boolean; page?: number; perPage?: number }
 const known = (map: object, key: string) => Object.hasOwn(map, key);
+export const MAX_PAGES = 200;
 export function searchCompanies({ q = '', region = '', district = '', size = '', includeDissolved = false, page = 1, perPage = 25 }: Search = {}) {
   const where: string[] = [], params: (string | number)[] = [];
   if (!includeDissolved) where.push('dissolved IS NULL');
@@ -25,15 +26,17 @@ export function searchCompanies({ q = '', region = '', district = '', size = '',
   else if (q) {
     const tokens = q.match(/[\p{L}\p{N}\p{M}]+/gu) || [];
     if (!tokens.length) where.push('0');
-    else { where.push('rowid IN (SELECT rowid FROM company_fts WHERE company_fts MATCH ?)'); params.push(tokens.map(t => `"${t.replaceAll('"', '""')}"*`).join(' AND ')); }
+    // Prefix matching only from two characters: `s*` expands to most of the index.
+    else { where.push('rowid IN (SELECT rowid FROM company_fts WHERE company_fts MATCH ?)'); params.push(tokens.map(t => `"${t.replaceAll('"', '""')}"${t.length > 1 ? '*' : ''}`).join(' AND ')); }
   }
   const clause = where.length ? ' WHERE ' + where.join(' AND ') : '';
   const { total } = db.prepare('SELECT COUNT(*) AS total FROM company' + clause).get(...params) as { total: number };
   perPage = Number.isSafeInteger(perPage) && perPage > 0 ? Math.min(perPage, 100) : 25;
-  const pages = Math.max(1, Math.ceil(total / perPage));
+  // Deep OFFSET scans grow with the page number; nobody pages past 200 by hand.
+  const pages = Math.min(MAX_PAGES, Math.max(1, Math.ceil(total / perPage)));
   page = Number.isSafeInteger(page) && page > 0 ? Math.min(page, pages) : 1;
   const rows = db.prepare('SELECT * FROM company' + clause + ' ORDER BY sort_key, ico LIMIT ? OFFSET ?').all(...params, perPage, (page - 1) * perPage) as Company[];
-  return { rows, total, page, pages };
+  return { rows, total, page, pages, capped: total > pages * perPage };
 }
 export function getCompany(ico: string): Company | null {
   if (!/^\d{8}$/.test(ico)) return null;
