@@ -85,7 +85,7 @@ The security review found two availability issues (ARES request flooding, unboun
 
 ## Time spent
 
-About 2 hours, including the research into turnover data sources.
+2 h 48 min (tracked), including the research into turnover data sources, the UI pass and the acceptance tests.
 
 ## Data and licences
 
