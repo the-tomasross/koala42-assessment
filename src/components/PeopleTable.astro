@@ -1,0 +1,39 @@
+---
+import type { Person } from '../lib/ares';
+import { getCompany } from '../lib/db';
+import { date } from '../lib/format';
+
+interface Props {
+  people: Person[];
+  owners?: boolean;
+}
+const { people, owners = false } = Astro.props;
+
+// A corporate owner links to its own detail when we have it in the dataset.
+const linkable = (p: Person) => p.kind === 'company' && p.ico && getCompany(p.ico);
+---
+
+{people.length ? (
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th scope="col">Name</th>
+        <th scope="col">{owners ? 'Share' : 'Role'}</th>
+        <th scope="col">Since</th>
+      </tr>
+    </thead>
+    <tbody>
+      {people.map((p) => (
+        <tr>
+          <th scope="row">
+            {linkable(p) ? <a class="underline" href={`/company/${p.ico}`}>{p.name}</a> : p.name}
+          </th>
+          <td>{(owners ? p.share : p.role) || 'Not reported'}</td>
+          <td>{date(p.since)}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+) : (
+  <p class="text-muted">No current entries in the public register.</p>
+)}

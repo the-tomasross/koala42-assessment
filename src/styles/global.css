@@ -28,7 +28,7 @@
      barev. Neutrály nesou jen zlomek chromatu značky, aby podklad ladil
      s akcentem a nepůsobil jako díra. */
   --h-brand: 250;
-  --c-brand: 0;
+  --c-brand: 0.12;
 
   /* Neutrály. Světlosti jsou zvolené tak, aby textové páry níž prošly
      WCAG AA. Když do škály sáhneš, přeměř oba konce, ne jen ten, který
@@ -232,5 +232,22 @@ body {
     border-radius: var(--radius-sm);
     padding: 1rem;
     background: var(--color-surface);
+  }
+}
+
+@layer components {
+  .data-table { width: 100%; table-layout: fixed; border-collapse: collapse; font-size: var(--text-caption); }
+  .data-table th, .data-table td { padding: 0.8rem 0.5rem; border-bottom: 1px solid var(--color-line); text-align: left; vertical-align: top; overflow-wrap: anywhere; }
+  .data-table thead { background: var(--color-surface); }
+  .data-table tbody th { font-weight: 500; }
+  .data-table tbody tr:hover { background: var(--color-surface); }
+  .facts { display: grid; gap: 1rem 2rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr)); }
+  .facts dd { overflow-wrap: anywhere; }
+  .detail-section { margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid var(--color-line); }
+  .detail-section > * + * { margin-top: 0.8rem; }
+  .muted-button { color: var(--color-muted); cursor: not-allowed; max-width: 100%; white-space: normal; }
+  .muted-button:hover { background: transparent; }
+  @media (max-width: 479px) {
+    .company-table th, .company-table td { padding-inline: 0.2rem; font-size: 0.75rem; }
   }
 }

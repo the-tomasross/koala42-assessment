@@ -1,69 +1,152 @@
 ---
-import ContactForm from '../components/ContactForm.astro';
-import Footer from '../components/Footer.astro';
-import Header from '../components/Header.astro';
 import Layout from '../layouts/Layout.astro';
-import { faq, hero, site } from '../data/site';
+import { searchCompanies, getMeta } from '../lib/db';
+import { regions, districts, districtsByRegion, sizeBands, sizes, forms } from '../lib/codelists';
+import { date } from '../lib/format';
 
-// Domovská stránka kostry. Je to STRUKTURA a důkaz, že celek jede, ne návrh
-// webu. Sekce odpovídají konverzní struktuře ze standards/web/seo-a-marketing.md:
-// hero, co nabízíme, důkaz, časté dotazy, kontakt. Vzhled vzniká per klient
-// podle context/style-guide.md.
-//
-// PRAVIDLA, KTERÁ PLATÍ I PO PŘESTAVBĚ VZHLEDU:
-// - jeden <h1> na stránku a hierarchie nadpisů bez přeskočené úrovně,
-// - klíčový obsah je text v HTML, ne v obrázku,
-// - FAQ na stránce a FAQ ve schématu jsou tatáž data.
+const params = Astro.url.searchParams;
+const q = (params.get('q') || '').trim().slice(0, 500);
+let region = params.get('region') || '';
+let district = params.get('district') || '';
+let size = params.get('size') || '';
+if (!Object.hasOwn(regions, region)) region = '';
+if (!Object.hasOwn(districts, district)) district = '';
+if (!Object.hasOwn(sizeBands, size)) size = '';
+// A district outside the chosen region wins: it is the more specific choice.
+if (district && region && !district.startsWith(region)) region = '';
+const includeDissolved = params.get('includeDissolved') === '1';
+
+const result = searchCompanies({
+  q,
+  region,
+  district,
+  size,
+  includeDissolved,
+  page: Number(params.get('page') || 1),
+});
+const meta = getMeta();
+
+function pageLink(page: number) {
+  const next = new URLSearchParams(params);
+  next.set('page', String(page));
+  return '/?' + next;
+}
+
+// The column header already says "Employees".
+const sizeShort = (code: string) => (sizes[code] || 'Not reported').replace(' employees', '');
 ---
 
-<Layout>
-  <Header />
+<Layout title="Companies | CZ Company Explorer">
+  <h1 class="font-display text-h3 font-semibold">Companies</h1>
 
-  <main id="obsah" tabindex="-1">
-    <section class="container-page py-20">
-      <h1 class="font-display text-h1 leading-[1.05]">{hero.h1}</h1>
-      <p class="mt-6 max-w-2xl text-lead text-text-soft">{hero.lead}</p>
-      <p class="mt-10">
-        <a class="btn" href="#kontakt">Napište nám</a>
-      </p>
-    </section>
+  <form method="get" action="/" class="mt-6 grid gap-4 border-y border-line py-5 sm:grid-cols-2 lg:grid-cols-4">
+    <div>
+      <label for="q" class="mb-1 block text-caption font-semibold">Company name or IČO</label>
+      <input class="field" id="q" name="q" value={q} maxlength="500" placeholder="Search companies" />
+    </div>
 
-    <section id="sluzby" class="container-page border-t border-line py-16">
-      <h2 class="font-display text-h2">Co nabízíme</h2>
-      <p class="mt-4 max-w-2xl text-text-soft">
-        Sem patří to, co klient prodává, jazykem zákazníka. Obsah dodává klient podle
-        obsahového procesu, kostra ho nevymýšlí.
-      </p>
-    </section>
+    <div>
+      <label for="region" class="mb-1 block text-caption font-semibold">Region</label>
+      <select class="field" id="region" name="region">
+        <option value="">All regions</option>
+        {Object.entries(regions).map(([code, label]) => (
+          <option value={code} selected={region === code}>{label}</option>
+        ))}
+      </select>
+    </div>
 
-    <section id="dotazy" class="container-page border-t border-line py-16">
-      <h2 class="font-display text-h2">Časté dotazy</h2>
-      <dl class="mt-8 grid gap-6">
-        {
-          faq.map((f) => (
-            <div class="border-t border-line pt-5">
-              <dt class="text-h4">{f.q}</dt>
-              <dd class="mt-2 text-text-soft">{f.a}</dd>
-            </div>
-          ))
-        }
-      </dl>
-    </section>
+    <div>
+      <label for="district" class="mb-1 block text-caption font-semibold">District</label>
+      <select class="field" id="district" name="district">
+        <option value="">All districts</option>
+        {Object.entries(districtsByRegion).map(([code, entries]) => (
+          <optgroup label={regions[code]}>
+            {entries.map(([value, label]) => (
+              <option value={value} selected={district === value}>{label}</option>
+            ))}
+          </optgroup>
+        ))}
+      </select>
+    </div>
 
-    <section id="kontakt" class="container-page border-t border-line py-16">
-      <h2 class="font-display text-h2">Napište nám</h2>
-      <p class="mt-4 max-w-2xl text-text-soft">
-        Ozveme se na {site.email} nebo na {site.phone}.
-      </p>
-      <div class="mt-10 max-w-xl">
-        <ContactForm />
-      </div>
-    </section>
-  </main>
+    <div>
+      <label for="size" class="mb-1 block text-caption font-semibold">Company size (employees)</label>
+      <select class="field" id="size" name="size" aria-describedby="size-hint">
+        <option value="">All sizes</option>
+        {Object.entries(sizeBands).map(([code, band]) => (
+          <option value={code} selected={size === code}>{band.label}</option>
+        ))}
+      </select>
+    </div>
 
-  <Footer />
+    <p id="size-hint" class="text-caption text-muted sm:col-span-2 lg:col-span-4">
+      Turnover is not published as open data. Size is a proxy, see{' '}
+      <a class="underline" href="/about">About the data</a>.
+    </p>
 
-  <!-- Skript formuláře leží v public/js/, ne ve stránce: CSP je bez
-       'unsafe-inline' a Astro skriptu označenému is:inline otisk nedá. -->
-  <script slot="head" is:inline defer src="/js/contact.js"></script>
+    <div class="flex flex-wrap items-center gap-4 sm:col-span-2 lg:col-span-4">
+      <label class="flex items-center gap-2">
+        <input type="checkbox" name="includeDissolved" value="1" checked={includeDissolved} />
+        Include dissolved
+      </label>
+      <button class="btn" type="submit">Filter</button>
+      <a class="underline" href="/">Reset</a>
+    </div>
+  </form>
+
+  <p class="my-5 text-caption">
+    <strong>{result.total.toLocaleString('en-US')} companies</strong>
+    <span class="text-muted"> · Data snapshot {date(meta.source_date)}</span>
+  </p>
+
+  {result.rows.length ? (
+    <>
+      <table class="data-table company-table">
+        <caption class="sr-only">Companies matching the selected filters</caption>
+        <thead>
+          <tr>
+            <th scope="col" class="w-[37%]">Name</th>
+            <th scope="col">IČO</th>
+            <th scope="col" class="hidden md:table-cell">Legal form</th>
+            <th scope="col">Employees</th>
+            <th scope="col">Town</th>
+            <th scope="col" class="hidden md:table-cell">District</th>
+          </tr>
+        </thead>
+        <tbody>
+          {result.rows.map((c) => (
+            <tr>
+              <th scope="row">
+                <a class="underline underline-offset-4" href={`/company/${c.ico}`}>{c.name}</a>
+                {c.dissolved && <span class="block text-caption text-muted">Dissolved</span>}
+              </th>
+              <td class="tabular-nums">{c.ico}</td>
+              <td class="hidden md:table-cell">{forms[c.form]?.short || c.form}</td>
+              <td>{sizeShort(c.size)}</td>
+              <td>{c.municipality || 'Not reported'}</td>
+              <td class="hidden md:table-cell">{districts[c.district] || c.district}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      <nav aria-label="Pagination" class="mt-6 flex items-center justify-between gap-3 text-caption">
+        {result.page > 1 ? (
+          <a class="btn btn-secondary" rel="prev" href={pageLink(result.page - 1)}>Previous</a>
+        ) : (
+          <span class="text-muted">Previous</span>
+        )}
+        <span>Page {result.page} of {result.pages.toLocaleString('en-US')}</span>
+        {result.page < result.pages ? (
+          <a class="btn btn-secondary" rel="next" href={pageLink(result.page + 1)}>Next</a>
+        ) : (
+          <span class="text-muted">Next</span>
+        )}
+      </nav>
+    </>
+  ) : (
+    <p class="py-10">
+      No companies match these filters. <a class="underline" href="/">Reset</a>
+    </p>
+  )}
 </Layout>

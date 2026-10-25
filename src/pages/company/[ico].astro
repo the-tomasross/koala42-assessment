@@ -1,0 +1,114 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import NotFound from '../404.astro';
+import PeopleTable from '../../components/PeopleTable.astro';
+import { getCompany, getMeta } from '../../lib/db';
+import { getPeople } from '../../lib/ares';
+import { forms, regions, districts, sizes, nace } from '../../lib/codelists';
+import { date } from '../../lib/format';
+
+const company = getCompany(Astro.params.ico || '');
+if (!company) Astro.response.status = 404;
+const people = company ? await getPeople(company.ico) : null;
+const meta = getMeta();
+
+// Back to the filtered list when we came from it, otherwise the plain list.
+let back = '/';
+try {
+  const referer = new URL(Astro.request.headers.get('referer') || '');
+  if (referer.origin === Astro.url.origin && referer.pathname === '/') back = '/' + referer.search;
+} catch {
+  // Missing or invalid referer keeps the unfiltered list.
+}
+
+const facts = company
+  ? [
+      ['Address', company.address],
+      ['Town', company.municipality],
+      ['District', districts[company.district]],
+      ['Region', regions[company.region]],
+      ['Size category', sizes[company.size]],
+      ['Industry', [company.nace, nace[company.nace]].filter(Boolean).join(' · ')],
+      ['Founded', date(company.founded)],
+    ]
+  : [];
+const registerUrl = company ? `https://or.justice.cz/ias/ui/rejstrik-$firma?ico=${company.ico}` : '';
+const aresDown = 'The public register (ARES) did not respond. Try again later.';
+---
+
+{company && people ? (
+  <Layout title={`${company.name} | CZ Company Explorer`}>
+    <a class="text-caption underline" href={back}>Back to the list</a>
+
+    <header class="mb-8 mt-5">
+      <h1 class="font-display text-h3 font-semibold break-words">{company.name}</h1>
+      <p class="mt-2 text-muted">
+        IČO {company.ico} ·{' '}
+        <abbr title={forms[company.form]?.full} class="no-underline">
+          {forms[company.form]?.short || company.form}
+        </abbr>
+      </p>
+      {company.dissolved && (
+        <p class="mt-3 inline-block rounded-sm border border-line px-3 py-1 text-caption">
+          Dissolved on {date(company.dissolved)}
+        </p>
+      )}
+    </header>
+
+    <dl class="facts">
+      {facts.map(([label, value]) => (
+        <div>
+          <dt class="text-caption text-muted">{label}</dt>
+          <dd>{value || 'Not reported'}</dd>
+        </div>
+      ))}
+    </dl>
+
+    <section class="detail-section" aria-labelledby="turnover">
+      <h2 id="turnover" class="text-h4 font-semibold">Turnover</h2>
+      <p>Not available as open data.</p>
+      {/* Intentionally not connected: aria-disabled keeps it focusable so
+          keyboard and screen reader users reach the explanation. */}
+      <button
+        type="button"
+        class="btn btn-secondary muted-button"
+        aria-disabled="true"
+        aria-describedby="turnover-explanation"
+      >
+        Extract turnover from financial statements (AI)
+      </button>
+      <p id="turnover-explanation" class="max-w-prose text-caption text-muted">
+        Not connected in this demo. Proposed pipeline: download the latest financial statement from
+        Sbírka listin, find the income statement page, read it from the text layer or with a vision
+        model for scans, validate the amount and unit, and store it with year and source. Small and
+        micro companies may legally omit the income statement, so some companies would stay unknown.
+      </p>
+      <p><a class="underline" href={registerUrl}>Open the official register record</a></p>
+    </section>
+
+    <section class="detail-section" aria-labelledby="management">
+      <h2 id="management" class="text-h4 font-semibold">Management</h2>
+      {people.status === 'error' ? <p>{aresDown}</p> : <PeopleTable people={people.management} />}
+    </section>
+
+    <section class="detail-section" aria-labelledby="owners">
+      <h2 id="owners" class="text-h4 font-semibold">Owners</h2>
+      {people.status === 'error' ? <p>{aresDown}</p> : <PeopleTable people={people.owners} owners />}
+    </section>
+
+    <section class="detail-section" aria-labelledby="contacts">
+      <h2 id="contacts" class="text-h4 font-semibold">Contact details</h2>
+      <p class="max-w-prose">
+        Phone numbers and email addresses of owners and managers are not published in any public
+        Czech register. Collecting them from other sources would need a legal basis under GDPR, so
+        this demo does not show them.
+      </p>
+    </section>
+
+    <p class="mt-8 text-caption text-muted">
+      Company data: ČSÚ RES snapshot {date(meta.source_date)}. People: ARES, fetched live.
+    </p>
+  </Layout>
+) : (
+  <NotFound />
+)}

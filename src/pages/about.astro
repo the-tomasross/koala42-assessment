@@ -1,0 +1,16 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+<Layout title="About the data | CZ Company Explorer">
+  <article class="max-w-prose space-y-5">
+    <h1 class="font-display text-h3 font-semibold">About the data</h1>
+    <h2 class="text-h4 font-semibold">Sources and coverage</h2>
+    <p>The company list comes from <a class="underline" href="https://csu.gov.cz/registr-ekonomickych-subjektu-otevrena-data-dokumentace">ČSÚ RES open data</a>, published twice a month under CC BY 4.0. ČSÚ code lists provide location, legal form, employee size and industry labels under the same licence. This demo includes s.r.o., a.s., v.o.s., k.s. and cooperatives. Dissolved companies are hidden by default.</p>
+    <p>Current management and owners come from the public <a class="underline" href="https://ares.gov.cz/">ARES register, Ministry of Finance</a>. They are fetched on demand and cached for one hour. This is an unofficial demo; verify important information in the official register.</p>
+    <h2 class="text-h4 font-semibold">Turnover and company size</h2>
+    <p>Turnover is not available as comprehensive open data. It can only be extracted for companies with filed financial statements containing it. Small and micro entities may omit the income statement. The proposed extraction pipeline is described on company detail pages.</p>
+    <p>The filter uses employee size as a proxy. About 58 % of active companies have no reported size category. “Not reported” means unknown, never zero employees.</p>
+    <h2 class="text-h4 font-semibold">Privacy and limitations</h2>
+    <p>Personal birth dates and home addresses are discarded. Phone numbers and email addresses of owners and managers are not published in public Czech registers. Collecting them elsewhere would require a legal basis under GDPR. They are intentionally omitted, and search engine indexing is blocked.</p>
+  </article>
+</Layout>

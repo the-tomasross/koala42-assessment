@@ -9,7 +9,6 @@ const HEADERS: Record<string, string> = {
   'Permissions-Policy': 'geolocation=(), microphone=(), camera=(), payment=(), usb=()',
   'Cross-Origin-Opener-Policy': 'same-origin',
   'Strict-Transport-Security': 'max-age=31536000',
-  'Content-Security-Policy': "frame-ancestors 'none'",
   // Company pages carry names of real people from the public register.
   // A demo has no reason to put them into search engines.
   'X-Robots-Tag': 'noindex, nofollow',
@@ -20,5 +19,12 @@ export const onRequest = defineMiddleware(async (_context, next) => {
   for (const [name, value] of Object.entries(HEADERS)) {
     response.headers.set(name, value);
   }
+  // Astro sends the hashed policy as a header on server-rendered pages.
+  // Extend it instead of replacing it, otherwise the whole policy is lost.
+  const csp = response.headers.get('Content-Security-Policy');
+  response.headers.set(
+    'Content-Security-Policy',
+    csp ? `${csp}; frame-ancestors 'none'` : "frame-ancestors 'none'",
+  );
   return response;
 });
