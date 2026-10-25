@@ -1,0 +1,22 @@
+/* GENEROVANÝ SOUBOR, needituj ho ručně.
+   Vzniká z public/fonts/ příkazem `npm run fonts` (scripts/generate-fonts.mjs).
+   Role písem se nastavují v ROLE v tom skriptu, ne tady.
+
+   PODSADA MUSÍ MÍT PŘI ZMĚNĚ NOVÝ NÁZEV SOUBORU. /fonts/* jede s immutable
+   na rok, takže pod stejným názvem by vracejícímu se návštěvníkovi jela stará
+   podsada a chybějící znaky by mu vysázelo náhradní písmo.
+
+   LICENCE: soubor s licencí patří vedle písma do public/fonts/. U OFL je to
+   podmínka licence, ne zvyk. Písmo z Fontshare se klientovi předávat nesmí,
+   viz standards/web/PLAYBOOK.md, sekce 4. */
+
+/* V public/fonts/ zatím žádné .woff2 není, takže web jede na systémovém
+   zásobníku. To je platný výchozí stav kostry, NE hotový web: písmo je
+   nejrychlejší cesta k vlastnímu vzhledu. Polož woff2 do public/fonts/,
+   nastav ROLE v scripts/generate-fonts.mjs a pusť `npm run fonts` znovu. */
+
+:root {
+  --font-family-display: ui-serif, Georgia, "Times New Roman", serif;
+  --font-family-body: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-family-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}

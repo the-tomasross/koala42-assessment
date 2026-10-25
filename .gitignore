@@ -1,0 +1,15 @@
+# build
+dist/
+.astro/
+node_modules/
+
+# data: raw downloads and the generated database are rebuilt by `npm run import`
+data/raw/
+data/*.db
+data/*.db-*
+
+# secrets, never in git
+.env
+.env.*
+
+.DS_Store

@@ -1,0 +1,236 @@
+@import "tailwindcss";
+@import "./fonts.css";
+
+/* ============================================================
+   Design tokeny kostry.
+
+   TŘI ÚROVNĚ: primitives (--p-*) -> semantic (--color-* v @theme)
+   -> component (.btn, .field v @layer components).
+
+   Komponenta sahá VÝHRADNĚ na sémantický token. Když sáhne na primitiv,
+   přestane jít přebarvit značka jedním místem a rozejde se to při první
+   změně palety.
+
+   TOHLE NENÍ DESIGN WEBU. Je to funkční výchozí stav, aby kostra postavila
+   nasaditelný web a bylo co změřit. Vzhled konkrétního webu vzniká podle
+   `context/style-guide.md` a `context/design-principles.md` v projektu,
+   podklad je `standards/web/design-system.md`.
+
+   PALETA JE PRÁZDNÁ ZÁMĚRNĚ: neutrály jsou bez barevnosti, dokud se
+   nedosadí `--h-brand` a `--c-brand` níž. Po dosazení PŘEMĚŘ KONTRAST
+   (`npm run mereni`), barevnost mění jas a s ním i naměřené poměry.
+   ============================================================ */
+
+/* ---- 1. Primitives ---- */
+:root {
+  /* DOSADIT: barevnost značky. Dokud je chroma 0, je celá paleta šedá.
+     Hue je úhel 0 az 360 v OKLCH, chroma zhruba 0 az 0.2 u použitelných
+     barev. Neutrály nesou jen zlomek chromatu značky, aby podklad ladil
+     s akcentem a nepůsobil jako díra. */
+  --h-brand: 250;
+  --c-brand: 0;
+
+  /* Neutrály. Světlosti jsou zvolené tak, aby textové páry níž prošly
+     WCAG AA. Když do škály sáhneš, přeměř oba konce, ne jen ten, který
+     měníš: nejtěsnější pár celé škály je linka ovládacího prvku (3:1),
+     ne text (4.5:1). */
+  --p-n-50: oklch(0.985 calc(var(--c-brand) * 0.03) var(--h-brand));
+  --p-n-100: oklch(0.955 calc(var(--c-brand) * 0.05) var(--h-brand));
+  --p-n-200: oklch(0.9 calc(var(--c-brand) * 0.06) var(--h-brand));
+  --p-n-300: oklch(0.84 calc(var(--c-brand) * 0.07) var(--h-brand));
+  --p-n-500: oklch(0.6 calc(var(--c-brand) * 0.08) var(--h-brand));
+  --p-n-600: oklch(0.5 calc(var(--c-brand) * 0.1) var(--h-brand));
+  --p-n-700: oklch(0.4 calc(var(--c-brand) * 0.1) var(--h-brand));
+  --p-n-900: oklch(0.24 calc(var(--c-brand) * 0.1) var(--h-brand));
+
+  /* Akcent. Světlost 0.5 je zvolená tak, aby výplň tlačítka držela proti
+     podkladu aspoň 3:1 (WCAG 1.4.11) a světlý text na ní aspoň 4.5:1
+     zároveň. Sytější a světlejší akcent obojí zároveň neunese, proto se
+     na světlém podkladu nesází text značkovou barvou z manuálu, ale
+     tímhle tmavším odstínem téže rodiny. */
+  --p-accent: oklch(0.5 calc(var(--c-brand) * 0.9) var(--h-brand));
+  --p-accent-strong: oklch(0.42 calc(var(--c-brand) * 0.9) var(--h-brand));
+
+  /* Stavy. Zelená a červená mají vlastní úkol, ne dekoraci: zelená znamená
+     platí, hotovo, výsledek. Barva nikdy nesmí být jediný nositel informace,
+     protože zelená a červená splývají při barvosleposti. */
+  --p-success: oklch(0.5 0.15 150);
+  --p-danger: oklch(0.5 0.17 25);
+}
+
+/* ---- 2. Semantic ---- */
+@theme {
+  --color-bg: var(--p-n-50);
+  --color-surface: var(--p-n-100);
+
+  --color-line: var(--p-n-300);
+  /* Ohraničení ovládacích prvků, min. 3:1 vůči podkladu (WCAG 1.4.11).
+     Slabší linka smí jen dělit, ne nést informaci o prvku. */
+  --color-line-control: var(--p-n-600);
+
+  --color-text: var(--p-n-900);
+  --color-text-soft: var(--p-n-700);
+  --color-muted: var(--p-n-600);
+
+  --color-link: var(--p-accent);
+  --color-btn: var(--p-accent);
+  --color-btn-hover: var(--p-accent-strong);
+  --color-on-btn: var(--p-n-50);
+
+  --color-success: var(--p-success);
+  --color-danger: var(--p-danger);
+
+  /* Písma. Celé zásobníky včetně metricky srovnaných náhrad generuje
+     `npm run fonts` do fonts.css, odsud se na ně jen odkazuje.
+     NEPOUŽÍVEJ Inter, viz README, sekce Písma. */
+  --font-display: var(--font-family-display);
+  --font-sans: var(--font-family-body);
+  --font-mono: var(--font-family-mono);
+
+  /* Fluidní typografická škála (clamp), 375 az 1440 px.
+     Generuje utility text-caption az text-h1. */
+  --text-caption: clamp(0.8125rem, 0.79rem + 0.11vw, 0.875rem);
+  --text-body: clamp(1rem, 0.98rem + 0.09vw, 1.0625rem);
+  --text-lead: clamp(1.0625rem, 1.02rem + 0.19vw, 1.1875rem);
+  --text-h4: clamp(1.25rem, 1.14rem + 0.47vw, 1.5rem);
+  --text-h3: clamp(1.625rem, 1.4rem + 0.94vw, 2.25rem);
+  --text-h2: clamp(2rem, 1.6rem + 1.7vw, 3rem);
+  --text-h1: clamp(2.5rem, 1.9rem + 2.6vw, 4.5rem);
+
+  /* Geometrie. Per klient, tohle je neutrální výchozí stav. */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+
+  /* Jediné odlehčení. Zdroj pravdy pro pohyb je standards/rules/animace.md,
+     odsud se hodnoty kopírují, neodvozují. */
+  --ease-out-soft: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ---- 3. Base ---- */
+html {
+  scroll-behavior: smooth;
+  color-scheme: light;
+  -webkit-text-size-adjust: 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* Nativní cross-document přechody stránek, nulový JavaScript.
+   Nahrazuje Astro <ClientRouter />, který stojí zhruba 16 kB. */
+@view-transition {
+  navigation: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  /* Chrání proti vodorovnému posuvníku z animací mimo viewport. Neschovává
+     skutečné přetečení obsahu: `npm run mereni` ho měří na scrollWidth
+     i skutečným pokusem odrolovat, takže se to nedá zamaskovat. */
+  overflow-x: hidden;
+}
+
+/* Viditelný focus je podmínka, ne volba. Obrys je na akcentu, protože ten
+   drží proti podkladu 3:1; slabší neutrál by na fokusu neprošel. */
+:where(a, button, input, textarea, select, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--color-link);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
+}
+
+/* ---- 4. Komponenty ----
+   Patří do @layer components, jinak přebijí Tailwind utility. Typický projev:
+   `.btn` s display:inline-flex přebije utilitu `hidden` a prvek zůstane vidět. */
+@layer components {
+  .container-page {
+    margin-inline: auto;
+    width: 100%;
+    max-width: 72rem;
+    padding-inline: clamp(1.25rem, 4vw, 3rem);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--radius-md);
+    background: var(--color-btn);
+    color: var(--color-on-btn);
+    font-weight: 600;
+    line-height: 1.2;
+    /* Mikrointerakce zůstávají svižné (120 az 200 ms), zpomalují se jen
+       vstupní a odhalovací animace. Viz standards/rules/animace.md. */
+    transition: background-color 0.18s var(--ease-out-soft);
+  }
+
+  .btn:hover {
+    background: var(--color-btn-hover);
+  }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--color-link);
+    border: 1px solid var(--color-line-control);
+  }
+
+  .btn-secondary:hover {
+    background: var(--color-surface);
+  }
+
+  .field {
+    width: 100%;
+    padding: 0.7rem 0.85rem;
+    border: 1px solid var(--color-line-control);
+    border-radius: var(--radius-sm);
+    background: var(--color-bg);
+    color: var(--color-text);
+    font: inherit;
+  }
+
+  .field::placeholder {
+    color: var(--color-muted);
+  }
+
+  /* Přeskočení na obsah. Je vidět až při tabulaci, ale MUSÍ v dokumentu být:
+     bez něj projde odečítač obrazovky navigaci na každé stránce znovu. */
+  .skip-link {
+    position: absolute;
+    left: -9999px;
+    top: 0;
+    z-index: 100;
+    padding: 0.75rem 1rem;
+    background: var(--color-btn);
+    color: var(--color-on-btn);
+  }
+
+  .skip-link:focus {
+    left: 0;
+  }
+
+  .noscript-note {
+    border: 1px solid var(--color-line-control);
+    border-radius: var(--radius-sm);
+    padding: 1rem;
+    background: var(--color-surface);
+  }
+}

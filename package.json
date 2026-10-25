@@ -1,0 +1,29 @@
+{
+  "name": "koala42-assessment",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "start": "node dist/server/entry.mjs",
+    "preview": "astro build && node dist/server/entry.mjs",
+    "import": "node scripts/import-res.mjs",
+    "test": "node --test test/",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/node": "^11.1.9",
+    "astro": "^7.4.2",
+    "better-sqlite3": "^13.0.3"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/better-sqlite3": "^7.6.13",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^7.0.2"
+  }
+}

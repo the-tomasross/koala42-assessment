@@ -1,0 +1,11 @@
+# Source upload for `gcloud run deploy --source`. Unlike .gitignore, the
+# prebuilt database IS uploaded: it is baked into the image.
+.git/
+node_modules/
+dist/
+.astro/
+data/raw/
+data/*.db-*
+.env
+.env.*
+.DS_Store

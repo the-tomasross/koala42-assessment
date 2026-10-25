@@ -1,0 +1,550 @@
+{
+  "icoId": "06841945",
+  "zaznamy": [
+    {
+      "rejstrik": "OR",
+      "primarniZaznam": true,
+      "spisovaZnacka": [
+        {
+          "datumZapisu": "2018-02-07",
+          "soud": "MSPH",
+          "oddil": "C",
+          "vlozka": 289983
+        }
+      ],
+      "ico": [
+        {
+          "datumZapisu": "2018-02-07",
+          "hodnota": "06841945"
+        }
+      ],
+      "obchodniJmeno": [
+        {
+          "datumZapisu": "2018-02-07",
+          "hodnota": "KOALA42 s.r.o."
+        }
+      ],
+      "zakladniKapital": [
+        {
+          "datumZapisu": "2018-02-07",
+          "datumVymazu": "2020-02-07",
+          "typJmeni": "ZAKLADNI_JMENI",
+          "vklad": {
+            "typObnos": "KORUNY",
+            "hodnota": "3"
+          }
+        },
+        {
+          "datumZapisu": "2020-02-07",
+          "typJmeni": "ZAKLADNI_JMENI",
+          "vklad": {
+            "typObnos": "KORUNY",
+            "hodnota": "200000"
+          }
+        }
+      ],
+      "pravniForma": [
+        {
+          "datumZapisu": "2018-02-07",
+          "hodnota": "112"
+        }
+      ],
+      "financniUrad": "008",
+      "adresy": [
+        {
+          "datumZapisu": "2018-02-07",
+          "datumVymazu": "2021-12-20",
+          "adresa": {
+            "kodStatu": "CZ",
+            "nazevStatu": "Česká republika",
+            "kodKraje": 19,
+            "nazevKraje": "Hlavní město Praha",
+            "kodObce": 554782,
+            "nazevObce": "Praha",
+            "kodSpravnihoObvodu": 27,
+            "nazevSpravnihoObvodu": "Praha 2",
+            "kodMestskehoObvodu": 27,
+            "nazevMestskehoObvodu": "Praha 2",
+            "kodMestskeCastiObvodu": 500089,
+            "kodUlice": 457434,
+            "nazevMestskeCastiObvodu": "Praha 2",
+            "nazevUlice": "Na Folimance",
+            "cisloDomovni": 2155,
+            "kodCastiObce": 490229,
+            "cisloOrientacni": 15,
+            "nazevCastiObce": "Vinohrady",
+            "kodAdresnihoMista": 21756929,
+            "psc": 12000,
+            "textovaAdresa": "Na Folimance 2155/15, Vinohrady, 12000 Praha 2",
+            "standardizaceAdresy": true,
+            "typCisloDomovni": 1
+          },
+          "typAdresy": "SIDLO"
+        },
+        {
+          "datumZapisu": "2021-12-20",
+          "datumVymazu": "2026-01-03",
+          "adresa": {
+            "kodStatu": "CZ",
+            "nazevStatu": "Česká republika",
+            "kodKraje": 19,
+            "nazevKraje": "Hlavní město Praha",
+            "kodObce": 554782,
+            "nazevObce": "Praha",
+            "kodSpravnihoObvodu": 78,
+            "nazevSpravnihoObvodu": "Praha 7",
+            "kodMestskehoObvodu": 78,
+            "nazevMestskehoObvodu": "Praha 7",
+            "kodMestskeCastiObvodu": 500186,
+            "kodUlice": 443034,
+            "nazevMestskeCastiObvodu": "Praha 7",
+            "nazevUlice": "Argentinská",
+            "cisloDomovni": 1621,
+            "kodCastiObce": 490067,
+            "cisloOrientacni": 36,
+            "nazevCastiObce": "Holešovice",
+            "kodAdresnihoMista": 80013066,
+            "psc": 17000,
+            "textovaAdresa": "Argentinská 1621/36, Holešovice, 17000 Praha 7",
+            "standardizaceAdresy": true,
+            "typCisloDomovni": 1
+          },
+          "typAdresy": "SIDLO"
+        },
+        {
+          "datumZapisu": "2026-01-03",
+          "adresa": {
+            "kodStatu": "CZ",
+            "nazevStatu": "Česká republika",
+            "kodKraje": 19,
+            "nazevKraje": "Hlavní město Praha",
+            "kodObce": 554782,
+            "nazevObce": "Praha",
+            "kodSpravnihoObvodu": 86,
+            "nazevSpravnihoObvodu": "Praha 8",
+            "kodMestskehoObvodu": 86,
+            "nazevMestskehoObvodu": "Praha 8",
+            "kodMestskeCastiObvodu": 500208,
+            "kodUlice": 472093,
+            "nazevMestskeCastiObvodu": "Praha 8",
+            "nazevUlice": "Thámova",
+            "cisloDomovni": 289,
+            "kodCastiObce": 400637,
+            "cisloOrientacni": 13,
+            "nazevCastiObce": "Karlín",
+            "kodAdresnihoMista": 22351612,
+            "psc": 18600,
+            "textovaAdresa": "Thámova 289/13, Karlín, 18600 Praha 8",
+            "standardizaceAdresy": true,
+            "typCisloDomovni": 1
+          },
+          "typAdresy": "SIDLO"
+        }
+      ],
+      "datumAktualizace": "2026-01-07",
+      "stavSubjektu": "AKTIVNI",
+      "datumZapisu": "2018-02-07",
+      "zpusobRizeni": [
+        {
+          "datumZapisu": "2024-11-13",
+          "typ": "INDIVIDUALNI_SRO"
+        }
+      ],
+      "cinnosti": {
+        "predmetPodnikani": [
+          {
+            "datumZapisu": "2018-02-07",
+            "hodnota": "Výroba, obchod a služby neuvedené v přílohách 1 až 3 živnostenského zákona"
+          }
+        ]
+      },
+      "statutarniOrgany": [
+        {
+          "datumZapisu": "2018-02-07",
+          "nazevOrganu": "Statutární orgán",
+          "pocetClenu": [
+            {
+              "datumZapisu": "2018-02-07",
+              "datumVymazu": "2020-02-07",
+              "pocetClenu": 3,
+              "typ": "PRESNY"
+            },
+            {
+              "datumZapisu": "2020-02-07",
+              "pocetClenu": 2,
+              "typ": "PRESNY"
+            }
+          ],
+          "clenoveOrganu": [
+            {
+              "datumZapisu": "2021-11-24",
+              "typAngazma": "STATUTARNI_ORGAN_CLEN",
+              "clenstvi": {
+                "funkce": {
+                  "vznikFunkce": "2018-02-07",
+                  "nazev": "jednatel"
+                }
+              },
+              "nazevAngazma": "Člen statutárního orgánu",
+              "fyzickaOsoba": {
+                "jmeno": "Jan",
+                "prijmeni": "NOVÁK",
+                "datumNarozeni": "1980-01-01",
+                "adresa": {
+                  "kodStatu": "CZ",
+                  "nazevStatu": "Česká republika",
+                  "nazevObce": "Praha",
+                  "textovaAdresa": "Smyšlená 1/1, 11000 Praha 1",
+                  "psc": 11000
+                }
+              }
+            },
+            {
+              "datumZapisu": "2018-02-07",
+              "datumVymazu": "2021-11-24",
+              "typAngazma": "STATUTARNI_ORGAN_CLEN",
+              "clenstvi": {
+                "funkce": {
+                  "vznikFunkce": "2018-02-07",
+                  "nazev": "jednatel"
+                }
+              },
+              "nazevAngazma": "Člen statutárního orgánu",
+              "fyzickaOsoba": {
+                "jmeno": "Petra",
+                "prijmeni": "SVOBODOVÁ",
+                "datumNarozeni": "1980-01-01",
+                "adresa": {
+                  "kodStatu": "CZ",
+                  "nazevStatu": "Česká republika",
+                  "nazevObce": "Praha",
+                  "textovaAdresa": "Smyšlená 1/1, 11000 Praha 1",
+                  "psc": 11000
+                }
+              }
+            },
+            {
+              "datumZapisu": "2018-02-07",
+              "datumVymazu": "2023-08-05",
+              "typAngazma": "STATUTARNI_ORGAN_CLEN",
+              "clenstvi": {
+                "funkce": {
+                  "vznikFunkce": "2018-02-07",
+                  "nazev": "jednatel"
+                }
+              },
+              "nazevAngazma": "Člen statutárního orgánu",
+              "fyzickaOsoba": {
+                "jmeno": "Karel",
+                "prijmeni": "DVOŘÁK",
+                "datumNarozeni": "1980-01-01",
+                "adresa": {
+                  "kodStatu": "CZ",
+                  "nazevStatu": "Česká republika",
+                  "nazevObce": "Praha",
+                  "textovaAdresa": "Smyšlená 1/1, 11000 Praha 1",
+                  "psc": 11000
+                }
+              }
+            },
+            {
+              "datumZapisu": "2018-02-07",
+              "datumVymazu": "2020-02-07",
+              "typAngazma": "STATUTARNI_ORGAN_CLEN",
+              "clenstvi": {
+                "funkce": {
+                  "vznikFunkce": "2018-02-07",
+                  "zanikFunkce": "2020-02-07",
+                  "nazev": "jednatel"
+                }
+              },
+              "nazevAngazma": "Člen statutárního orgánu",
+              "fyzickaOsoba": {
+                "jmeno": "Eva",
+                "prijmeni": "ČERNÁ",
+                "datumNarozeni": "1980-01-01",
+                "adresa": {
+                  "kodStatu": "CZ",
+                  "nazevStatu": "Česká republika",
+                  "nazevObce": "Praha",
+                  "textovaAdresa": "Smyšlená 1/1, 11000 Praha 1",
+                  "psc": 11000
+                }
+              }
+            },
+            {
+              "datumZapisu": "2023-08-05",
+              "typAngazma": "STATUTARNI_ORGAN_CLEN",
+              "clenstvi": {
+                "funkce": {
+                  "vznikFunkce": "2018-02-07",
+                  "nazev": "jednatel"
+                }
+              },
+              "nazevAngazma": "Člen statutárního orgánu",
+              "fyzickaOsoba": {
+                "jmeno": "Tomáš",
+                "prijmeni": "PROCHÁZKA",
+                "datumNarozeni": "1980-01-01",
+                "adresa": {
+                  "kodStatu": "CZ",
+                  "nazevStatu": "Česká republika",
+                  "nazevObce": "Praha",
+                  "textovaAdresa": "Smyšlená 1/1, 11000 Praha 1",
+                  "psc": 11000
+                }
+              }
+            }
+          ],
+          "typOrganu": "STATUTARNI_ORGAN",
+          "zpusobJednani": [
+            {
+              "datumZapisu": "2018-02-07",
+              "hodnota": "Každý jednatel zastupuje společnost samostatně."
+            }
+          ]
+        }
+      ],
+      "spolecnici": [
+        {
+          "datumZapisu": "2018-02-07",
+          "nazevOrganu": "Společníci",
+          "spolecnik": [
+            {
+              "datumZapisu": "2021-11-24",
+              "podil": [
+                {
+                  "datumZapisu": "2021-11-24",
+                  "vklad": {
+                    "typObnos": "KORUNY",
+                    "hodnota": "100000"
+                  },
+                  "velikostPodilu": {
+                    "typObnos": "PROCENTA",
+                    "hodnota": "50"
+                  },
+                  "splaceni": {
+                    "typObnos": "PROCENTA",
+                    "hodnota": "100"
+                  }
+                }
+              ],
+              "osoba": {
+                "datumZapisu": "2021-11-24",
+                "typAngazma": "SPOLECNIK_OSOBA",
+                "clenstvi": {},
+                "nazevAngazma": "Společník",
+                "fyzickaOsoba": {
+                  "jmeno": "Lucie",
+                  "prijmeni": "KUČEROVÁ",
+                  "datumNarozeni": "1980-01-01",
+                  "adresa": {
+                    "kodStatu": "CZ",
+                    "nazevStatu": "Česká republika",
+                    "nazevObce": "Praha",
+                    "textovaAdresa": "Smyšlená 1/1, 11000 Praha 1",
+                    "psc": 11000
+                  }
+                }
+              }
+            },
+            {
+              "datumZapisu": "2018-02-07",
+              "datumVymazu": "2021-11-24",
+              "podil": [
+                {
+                  "datumZapisu": "2018-02-07",
+                  "datumVymazu": "2020-02-07",
+                  "vklad": {
+                    "typObnos": "KORUNY",
+                    "hodnota": "1"
+                  },
+                  "velikostPodilu": {
+                    "typObnos": "TEXT",
+                    "hodnota": "1/3"
+                  },
+                  "splaceni": {
+                    "typObnos": "PROCENTA",
+                    "hodnota": "100"
+                  }
+                },
+                {
+                  "datumZapisu": "2020-02-07",
+                  "datumVymazu": "2021-11-24",
+                  "vklad": {
+                    "typObnos": "KORUNY",
+                    "hodnota": "100000"
+                  },
+                  "velikostPodilu": {
+                    "typObnos": "PROCENTA",
+                    "hodnota": "50"
+                  },
+                  "splaceni": {
+                    "typObnos": "PROCENTA",
+                    "hodnota": "100"
+                  }
+                }
+              ],
+              "osoba": {
+                "datumZapisu": "2018-02-07",
+                "datumVymazu": "2021-11-24",
+                "typAngazma": "SPOLECNIK_OSOBA",
+                "clenstvi": {},
+                "nazevAngazma": "Společník",
+                "fyzickaOsoba": {
+                  "jmeno": "Martin",
+                  "prijmeni": "VESELÝ",
+                  "datumNarozeni": "1980-01-01",
+                  "adresa": {
+                    "kodStatu": "CZ",
+                    "nazevStatu": "Česká republika",
+                    "nazevObce": "Praha",
+                    "textovaAdresa": "Smyšlená 1/1, 11000 Praha 1",
+                    "psc": 11000
+                  }
+                }
+              }
+            },
+            {
+              "datumZapisu": "2018-02-07",
+              "datumVymazu": "2023-08-05",
+              "podil": [
+                {
+                  "datumZapisu": "2018-02-07",
+                  "datumVymazu": "2020-02-07",
+                  "vklad": {
+                    "typObnos": "KORUNY",
+                    "hodnota": "1"
+                  },
+                  "velikostPodilu": {
+                    "typObnos": "TEXT",
+                    "hodnota": "1/3"
+                  },
+                  "splaceni": {
+                    "typObnos": "PROCENTA",
+                    "hodnota": "100"
+                  }
+                },
+                {
+                  "datumZapisu": "2020-02-07",
+                  "datumVymazu": "2023-08-05",
+                  "vklad": {
+                    "typObnos": "KORUNY",
+                    "hodnota": "100000"
+                  },
+                  "velikostPodilu": {
+                    "typObnos": "PROCENTA",
+                    "hodnota": "50"
+                  },
+                  "splaceni": {
+                    "typObnos": "PROCENTA",
+                    "hodnota": "100"
+                  }
+                }
+              ],
+              "osoba": {
+                "datumZapisu": "2018-02-07",
+                "datumVymazu": "2023-08-05",
+                "typAngazma": "SPOLECNIK_OSOBA",
+                "clenstvi": {},
+                "nazevAngazma": "Společník",
+                "fyzickaOsoba": {
+                  "jmeno": "Jana",
+                  "prijmeni": "HORÁKOVÁ",
+                  "datumNarozeni": "1980-01-01",
+                  "adresa": {
+                    "kodStatu": "CZ",
+                    "nazevStatu": "Česká republika",
+                    "nazevObce": "Praha",
+                    "textovaAdresa": "Smyšlená 1/1, 11000 Praha 1",
+                    "psc": 11000
+                  }
+                }
+              }
+            },
+            {
+              "datumZapisu": "2018-02-07",
+              "datumVymazu": "2020-02-07",
+              "podil": [
+                {
+                  "datumZapisu": "2018-02-07",
+                  "datumVymazu": "2020-02-07",
+                  "vklad": {
+                    "typObnos": "KORUNY",
+                    "hodnota": "1"
+                  },
+                  "velikostPodilu": {
+                    "typObnos": "TEXT",
+                    "hodnota": "1/3"
+                  },
+                  "splaceni": {
+                    "typObnos": "PROCENTA",
+                    "hodnota": "100"
+                  }
+                }
+              ],
+              "osoba": {
+                "datumZapisu": "2018-02-07",
+                "datumVymazu": "2020-02-07",
+                "typAngazma": "SPOLECNIK_OSOBA",
+                "clenstvi": {},
+                "nazevAngazma": "Společník",
+                "fyzickaOsoba": {
+                  "jmeno": "Jan",
+                  "prijmeni": "NOVÁK",
+                  "datumNarozeni": "1980-01-01",
+                  "adresa": {
+                    "kodStatu": "CZ",
+                    "nazevStatu": "Česká republika",
+                    "nazevObce": "Praha",
+                    "textovaAdresa": "Smyšlená 1/1, 11000 Praha 1",
+                    "psc": 11000
+                  }
+                }
+              }
+            },
+            {
+              "datumZapisu": "2023-08-05",
+              "podil": [
+                {
+                  "datumZapisu": "2023-08-05",
+                  "vklad": {
+                    "typObnos": "KORUNY",
+                    "hodnota": "100000"
+                  },
+                  "velikostPodilu": {
+                    "typObnos": "PROCENTA",
+                    "hodnota": "50"
+                  },
+                  "splaceni": {
+                    "typObnos": "PROCENTA",
+                    "hodnota": "100"
+                  }
+                }
+              ],
+              "osoba": {
+                "datumZapisu": "2023-08-05",
+                "typAngazma": "SPOLECNIK_OSOBA",
+                "clenstvi": {},
+                "nazevAngazma": "Společník",
+                "fyzickaOsoba": {
+                  "jmeno": "Petra",
+                  "prijmeni": "SVOBODOVÁ",
+                  "datumNarozeni": "1980-01-01",
+                  "adresa": {
+                    "kodStatu": "CZ",
+                    "nazevStatu": "Česká republika",
+                    "nazevObce": "Praha",
+                    "textovaAdresa": "Smyšlená 1/1, 11000 Praha 1",
+                    "psc": 11000
+                  }
+                }
+              }
+            }
+          ],
+          "typOrganu": "SPOLECNIK"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+---
+import ContactForm from '../components/ContactForm.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import Layout from '../layouts/Layout.astro';
+import { faq, hero, site } from '../data/site';
+
+// Domovská stránka kostry. Je to STRUKTURA a důkaz, že celek jede, ne návrh
+// webu. Sekce odpovídají konverzní struktuře ze standards/web/seo-a-marketing.md:
+// hero, co nabízíme, důkaz, časté dotazy, kontakt. Vzhled vzniká per klient
+// podle context/style-guide.md.
+//
+// PRAVIDLA, KTERÁ PLATÍ I PO PŘESTAVBĚ VZHLEDU:
+// - jeden <h1> na stránku a hierarchie nadpisů bez přeskočené úrovně,
+// - klíčový obsah je text v HTML, ne v obrázku,
+// - FAQ na stránce a FAQ ve schématu jsou tatáž data.
+---
+
+<Layout>
+  <Header />
+
+  <main id="obsah" tabindex="-1">
+    <section class="container-page py-20">
+      <h1 class="font-display text-h1 leading-[1.05]">{hero.h1}</h1>
+      <p class="mt-6 max-w-2xl text-lead text-text-soft">{hero.lead}</p>
+      <p class="mt-10">
+        <a class="btn" href="#kontakt">Napište nám</a>
+      </p>
+    </section>
+
+    <section id="sluzby" class="container-page border-t border-line py-16">
+      <h2 class="font-display text-h2">Co nabízíme</h2>
+      <p class="mt-4 max-w-2xl text-text-soft">
+        Sem patří to, co klient prodává, jazykem zákazníka. Obsah dodává klient podle
+        obsahového procesu, kostra ho nevymýšlí.
+      </p>
+    </section>
+
+    <section id="dotazy" class="container-page border-t border-line py-16">
+      <h2 class="font-display text-h2">Časté dotazy</h2>
+      <dl class="mt-8 grid gap-6">
+        {
+          faq.map((f) => (
+            <div class="border-t border-line pt-5">
+              <dt class="text-h4">{f.q}</dt>
+              <dd class="mt-2 text-text-soft">{f.a}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </section>
+
+    <section id="kontakt" class="container-page border-t border-line py-16">
+      <h2 class="font-display text-h2">Napište nám</h2>
+      <p class="mt-4 max-w-2xl text-text-soft">
+        Ozveme se na {site.email} nebo na {site.phone}.
+      </p>
+      <div class="mt-10 max-w-xl">
+        <ContactForm />
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+
+  <!-- Skript formuláře leží v public/js/, ne ve stránce: CSP je bez
+       'unsafe-inline' a Astro skriptu označenému is:inline otisk nedá. -->
+  <script slot="head" is:inline defer src="/js/contact.js"></script>
+</Layout>
