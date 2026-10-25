@@ -52,6 +52,7 @@ npm ci
 npm run import -- data/sample/res_sample.csv
 npm run dev
 npm test
+npm run test:acceptance
 ```
 
 For full coverage, download [res_data.csv](https://opendata.csu.gov.cz/soubory/od/od_org03/res_data.csv) (544 MB) into `data/raw/`, then run:
@@ -60,7 +61,7 @@ For full coverage, download [res_data.csv](https://opendata.csu.gov.cz/soubory/o
 npm run import -- data/raw/res_data.csv
 ```
 
-Tests use the sample CSV and fictional ARES fixture, without network calls.
+Tests use the sample CSV and fictional ARES fixtures, without network calls. `npm test` covers the import, queries and ARES parsing; `npm run test:acceptance` builds the app, starts it against a fake ARES and checks the three user stories over HTTP.
 
 ## Deploy
 

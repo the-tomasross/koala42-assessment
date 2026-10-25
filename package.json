@@ -13,6 +13,7 @@
     "preview": "astro build && node dist/server/entry.mjs",
     "import": "node scripts/import-res.mjs",
     "test": "node --test \"test/*.test.mjs\"",
+    "test:acceptance": "astro build && node --test \"test/acceptance/*.test.mjs\"",
     "astro": "astro"
   },
   "dependencies": {

@@ -1,0 +1,64 @@
+{
+  "icoId": "00000000",
+  "zaznamy": [
+    {
+      "rejstrik": "OR",
+      "primarniZaznam": true,
+      "statutarniOrgany": [
+        {
+          "nazevOrganu": "Statutární orgán - Rada jednatelů",
+          "clenoveOrganu": [
+            {
+              "datumZapisu": "2024-03-01",
+              "nazevAngazma": "Člen statutárního orgánu",
+              "clenstvi": { "funkce": { "vznikFunkce": "2024-03-01", "nazev": "Předseda rady jednatelů" } },
+              "fyzickaOsoba": {
+                "jmeno": "ALENA", "prijmeni": "VZOROVÁ", "datumNarozeni": "1975-05-05",
+                "adresa": { "textovaAdresa": "Vymyšlená 2, 60200 Brno" }
+              }
+            },
+            {
+              "datumZapisu": "2024-03-01",
+              "nazevAngazma": "Člen statutárního orgánu",
+              "clenstvi": { "funkce": { "vznikFunkce": "2024-03-02", "nazev": "jednatelka" } },
+              "fyzickaOsoba": { "jmeno": "Eva", "prijmeni": "Příkladová" }
+            }
+          ]
+        },
+        {
+          "nazevOrganu": "Prokura",
+          "clenoveOrganu": [
+            { "datumZapisu": "2023-05-10", "nazevAngazma": "Prokura", "fyzickaOsoba": { "jmeno": "KAREL", "prijmeni": "UKÁZKA" } }
+          ]
+        },
+        {
+          "nazevOrganu": "Statutární orgán",
+          "datumVymazu": "2020-01-01",
+          "clenoveOrganu": [
+            { "nazevAngazma": "Člen statutárního orgánu", "fyzickaOsoba": { "jmeno": "Odvolaný", "prijmeni": "Jednatel" } }
+          ]
+        }
+      ],
+      "spolecnici": [
+        {
+          "nazevOrganu": "Společníci",
+          "spolecnik": [
+            {
+              "datumZapisu": "2022-01-01",
+              "osoba": { "pravnickaOsoba": { "obchodniJmeno": "Vzorová holding a.s.", "ico": "99999999" } },
+              "podil": [{ "vklad": { "typObnos": "KORUNY", "hodnota": "200000;00" }, "velikostPodilu": { "typObnos": "PROCENTA", "hodnota": "66;67" } }]
+            },
+            {
+              "datumZapisu": "2022-01-01",
+              "osoba": { "fyzickaOsoba": { "jmeno": "Petr", "prijmeni": "Smyšlený" } },
+              "podil": [
+                { "datumVymazu": "2023-01-01", "velikostPodilu": { "typObnos": "TEXT", "hodnota": "1/2" } },
+                { "datumZapisu": "2023-01-01", "velikostPodilu": { "typObnos": "ZLOMEK", "hodnota": "1;3" } }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

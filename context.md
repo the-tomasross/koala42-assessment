@@ -58,7 +58,8 @@ src/pages/about.astro    data sources and limitations
 data/codelists/          ČSÚ code lists (in git)
 data/sample/             1 600 company rows for tests and local dev (in git)
 data/raw/                full download (not in git)
-test/fixtures/           ARES response with fictional people
+test/fixtures/           ARES responses with fictional people
+test/acceptance/         user stories over HTTP against the built server
 ```
 
 ## Conventions
@@ -69,7 +70,9 @@ test/fixtures/           ARES response with fictional people
 - Accessibility: labelled form fields, visible focus, tables with `<th scope>`,
   disabled AI button stays focusable (`aria-disabled`) so its explanation is reachable.
 - Never log or store personal data from ARES.
-- Tests: `node --test`, against the sample CSV and the fixture, no network.
+- Tests: `node --test`, against the sample CSV and the fixtures, no network.
+  Acceptance tests in `test/acceptance/` run the built server with `DB_PATH`
+  and `ARES_URL` pointing at a temporary database and a local fake ARES.
 
 ## Commands
 
@@ -78,4 +81,5 @@ npm run import -- data/raw/res_data.csv   # full build, about 625k active compan
 npm run import -- data/sample/res_sample.csv   # quick build for dev
 npm run dev
 npm test
+npm run test:acceptance   # builds, then tests the running server
 ```

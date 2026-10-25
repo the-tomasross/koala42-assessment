@@ -67,6 +67,8 @@ const MAX_INFLIGHT = 8;
 const cache = new Map<string, { expires: number; result: People; fetcher: typeof fetch }>();
 const inflight = new Map<string, Promise<People>>();
 const empty = (status: People['status']): People => ({ status, management: [], owners: [] });
+// The acceptance test points this at a local fake register.
+const ARES_URL = process.env.ARES_URL ?? 'https://ares.gov.cz/ekonomicke-subjekty-v-be/rest/ekonomicke-subjekty-vr';
 
 function remember(ico: string, result: People, fetcher: typeof fetch) {
   cache.delete(ico);
@@ -77,7 +79,7 @@ function remember(ico: string, result: People, fetcher: typeof fetch) {
 
 async function fetchPeople(ico: string, fetcher: typeof fetch): Promise<People> {
   try {
-    const response = await fetcher(`https://ares.gov.cz/ekonomicke-subjekty-v-be/rest/ekonomicke-subjekty-vr/${ico}`, {
+    const response = await fetcher(`${ARES_URL}/${ico}`, {
       signal: AbortSignal.timeout(5000), headers: { Accept: 'application/json' },
     });
     return response.status === 404 ? empty('not_found') : response.ok ? parsePeople(await response.json()) : empty('error');
